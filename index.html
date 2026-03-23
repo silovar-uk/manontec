@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マノン - 実戦ポテンシャル分析ツール</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --card-bg: #161616;
+            --text-main: #f0f0f0;
+            --text-sub: #999;
+            --manon-pink: #e8a0bf;
+            --manon-gold: #d4af37;
+            --safe-blue: #4fc3f7;
+            --danger-red: #ff5252;
+            --god-glow: rgba(212, 175, 55, 0.5);
+            --system-teal: #26c6da;
+            --system-glow: rgba(38, 198, 218, 0.35);
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: radial-gradient(circle at top, #1a1a1a 0%, #0a0a0a 100%);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            transition: padding-top 0.3s ease;
+        }
+        header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: rgba(10,10,10,0.95);
+            border-bottom: 2px solid var(--manon-pink);
+            z-index: 1000; padding: 12px 15px; box-sizing: border-box;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 25px rgba(0,0,0,0.7);
+        }
+        h1 {
+            font-size: 1.1rem; margin: 0 0 12px 0;
+            color: var(--manon-gold); text-align: center;
+            letter-spacing: 2px; text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(212,175,55,0.4);
+        }
+        .main-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+        .main-tab-btn {
+            flex: 1; padding: 9px 0; background-color: #1a1a1a; color: var(--text-sub);
+            border: 2px solid #333; border-radius: 8px; font-size: 0.78rem; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .main-tab-btn.active {
+            background-color: rgba(232,160,191,0.1); color: var(--manon-pink); border-color: var(--manon-pink);
+        }
+        .main-tab-btn:active { transform: scale(0.96); }
+
+        .controls { display: flex; flex-direction: column; gap: 10px; max-width: 600px; margin: 0 auto; }
+        .controls.collapsed { display: none; }
+        .controls.combo-mode .filter-tabs,
+        .controls.combo-mode .search-container,
+        .controls.combo-mode .mini-legend,
+        .controls.combo-mode .sort-select { display: none; }
+
+        .menu-toggle-btn {
+            width: 100%; max-width: 600px; margin: 12px auto 0; display: block;
+            background-color: rgba(232,160,191,0.1); color: var(--manon-pink);
+            border: 1px solid var(--manon-pink); padding: 8px 0; border-radius: 6px;
+            font-size: 0.8rem; font-weight: bold; cursor: pointer; text-align: center;
+            transition: all 0.2s; box-shadow: 0 0 10px rgba(232,160,191,0.15);
+        }
+        .menu-toggle-btn:hover { background-color: rgba(232,160,191,0.2); }
+        .menu-toggle-btn:active { transform: scale(0.98); }
+
+        .filter-tabs { display: flex; justify-content: space-between; gap: 5px; }
+        .filter-btn {
+            flex: 1; background-color: #222; color: var(--text-sub);
+            border: 1px solid #333; padding: 7px 0; border-radius: 6px;
+            font-size: 0.7rem; text-align: center; cursor: pointer; transition: all 0.3s ease;
+        }
+        .filter-btn.active {
+            background-color: var(--manon-pink); color: #000; font-weight: bold;
+            border-color: var(--manon-pink); box-shadow: 0 0 15px rgba(232,160,191,0.5);
+        }
+        .filter-btn:active { transform: scale(0.95); }
+
+        .medal-controls {
+            display: flex; align-items: center; gap: 12px;
+            background-color: #111; padding: 6px 12px; border-radius: 8px; border: 1px solid #222;
+        }
+        .medal-label { font-size: 0.75rem; color: var(--manon-gold); font-weight: bold; }
+        .medal-btns { display: flex; gap: 6px; flex: 1; }
+        .medal-btn {
+            flex: 1; background-color: #222; color: var(--text-sub);
+            border: 1px solid #333; padding: 5px 0; border-radius: 4px;
+            font-size: 0.85rem; text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .medal-btn.active {
+            background-color: var(--manon-gold); color: #000;
+            font-weight: bold; box-shadow: 0 0 10px var(--god-glow);
+        }
+        .medal-btn:active { transform: scale(0.95); }
+
+        .search-container { position: relative; width: 100%; }
+        .search-input {
+            width: 100%; padding: 10px 35px 10px 12px;
+            background-color: #1a1a1a; color: var(--text-main);
+            border: 1px solid #333; border-radius: 6px; font-size: 0.85rem;
+            box-sizing: border-box; outline: none;
+        }
+        #search-clear {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--text-sub);
+            font-size: 1.2rem; cursor: pointer; display: none; transition: transform 0.1s;
+        }
+        #search-clear:active { transform: translateY(-50%) scale(0.8); }
+
+        .mini-legend {
+            font-size: 0.65rem; color: var(--text-sub);
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 4px 12px; line-height: 1.2; text-align: center; margin-bottom: -4px;
+        }
+        .mini-legend span { white-space: nowrap; }
+        .mini-legend strong { color: var(--manon-pink); }
+        .mini-legend .sys-hint { color: var(--system-teal); }
+
+        .sort-select {
+            width: 100%; padding: 10px; background-color: #1a1a1a;
+            color: var(--text-main); border: 1px solid #333; border-radius: 6px; font-size: 0.85rem;
+        }
+
+        /* ===== 技カード ===== */
+        #card-container {
+            display: flex; flex-direction: column; gap: 16px;
+            padding: 15px 15px 30px; max-width: 600px; margin: 0 auto;
+        }
+        .skill-card {
+            background-color: var(--card-bg); border-radius: 14px; padding: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border-left: 5px solid var(--manon-pink); transition: transform 0.2s;
+        }
+        .skill-card.god-tier {
+            border-left-color: var(--manon-gold);
+            box-shadow: 0 0 20px var(--god-glow);
+            background: linear-gradient(135deg, #161616 0%, #252010 100%);
+        }
+        .skill-card.system-tier {
+            border-left-color: var(--system-teal);
+            box-shadow: 0 0 15px var(--system-glow);
+            background: linear-gradient(135deg, #161616 0%, #0a1f22 100%);
+        }
+        .skill-card.replaceable { opacity: 0.7; border-left-color: #555; }
+        .skill-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 10px;
+        }
+        .skill-name-wrapper { display: flex; align-items: center; gap: 8px; }
+        .skill-id-badge {
+            background-color: #222; color: var(--manon-pink); border: 1px solid var(--manon-pink);
+            font-size: 0.75rem; font-weight: bold; width: 22px; height: 22px; border-radius: 50%;
+            display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0;
+        }
+        .skill-card.god-tier    .skill-id-badge { background-color: var(--manon-gold); color: #000; border-color: var(--manon-gold); }
+        .skill-card.system-tier .skill-id-badge { background-color: var(--system-teal); color: #000; border-color: var(--system-teal); }
+        .skill-name { font-size: 1.15rem; font-weight: bold; margin: 0; }
+        .skill-command { font-size: 0.75rem; color: var(--text-sub); margin-top: 3px; }
+        .skill-score {
+            background: linear-gradient(135deg, var(--manon-gold), #b8860b);
+            color: #000; font-weight: 900; padding: 6px 14px; border-radius: 20px; font-size: 1rem;
+        }
+        .skill-score.sys-score {
+            background: linear-gradient(135deg, var(--system-teal), #00838f);
+        }
+        .param-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 12px; }
+        .param-item { background-color: #222; padding: 8px 4px; border-radius: 8px; text-align: center; border: 1px solid #333; }
+        .param-label { font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 2px; }
+        .param-value { font-size: 1.05rem; font-weight: 800; }
+        .value-safe   { color: var(--safe-blue); }
+        .value-danger { color: var(--danger-red); }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag         { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; background-color: #333; color: #ccc; }
+        .tag.god     { background-color: var(--manon-gold); color: #000; font-weight: bold; }
+        .tag.sys     { background-color: var(--system-teal); color: #000; font-weight: bold; }
+        .tag.warning { background-color: #4d1f1f; color: #ff9999; }
+        .note-text {
+            font-size: 0.75rem; color: var(--manon-pink); margin-top: 10px;
+            font-style: italic; border-top: 1px dashed #444; padding-top: 8px;
+        }
+        .skill-card.system-tier .note-text { color: var(--system-teal); }
+
+        /* ===== コンボカード ===== */
+        #combo-container {
+            display: flex; flex-direction: column; gap: 10px;
+            padding: 15px 15px 40px; max-width: 600px; margin: 0 auto;
+        }
+        .combo-category-label {
+            font-size: 0.82rem; font-weight: bold; color: var(--text-sub);
+            margin: 10px 0 4px 2px; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .combo-category-label::after { content:''; flex:1; height:1px; background:#2a2a2a; }
+
+        .combo-card {
+            background-color: var(--card-bg); border-radius: 12px; padding: 14px 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-left: 4px solid var(--manon-pink);
+        }
+        .combo-card.cat-basic   { border-left-color: var(--manon-pink); }
+        .combo-card.cat-medal   { border-left-color: var(--manon-gold); background: linear-gradient(135deg,#161616,#1e1a08); }
+        .combo-card.cat-sa2     { border-left-color: var(--safe-blue); background: linear-gradient(135deg,#161616,#081620); }
+        .combo-card.cat-antiair { border-left-color: #69f0ae; background: linear-gradient(135deg,#161616,#081a10); }
+
+        .combo-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .combo-name { font-size: 0.92rem; font-weight: bold; }
+        .combo-damage {
+            font-size: 0.85rem; font-weight: 800; color: var(--manon-gold);
+            background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3);
+            padding: 3px 10px; border-radius: 10px; white-space: nowrap;
+        }
+        .combo-steps {
+            display: flex; align-items: center; flex-wrap: wrap;
+            gap: 4px; margin-bottom: 9px;
+        }
+        .combo-step-badge {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 0.8rem; font-weight: bold; color: #000; flex-shrink: 0;
+        }
+        .type-normal { background-color: var(--manon-pink); }
+        .type-god    { background-color: var(--manon-gold); }
+        .type-system { background-color: var(--system-teal); }
+        .combo-step-action {
+            font-size: 0.65rem; background: #2a2a2a; color: #888;
+            padding: 4px 8px; border-radius: 4px; white-space: nowrap; border: 1px solid #333;
+        }
+        .combo-arrow { color: #444; font-size: 1rem; flex-shrink: 0; line-height: 1; }
+
+        .combo-recipe {
+            font-size: 0.67rem; color: #555;
+            margin-bottom: 9px; line-height: 1.5;
+            border-left: 2px solid #252525; padding-left: 8px;
+        }
+        .combo-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+        .combo-difficulty { display: flex; gap: 1px; }
+        .star-on  { color: var(--manon-gold); font-size: 0.9rem; }
+        .star-off { color: #2a2a2a; font-size: 0.9rem; }
+        .combo-condition {
+            font-size: 0.67rem; color: var(--safe-blue);
+            background: rgba(79,195,247,0.07); border: 1px solid rgba(79,195,247,0.2);
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .combo-medal-gain {
+            font-size: 0.67rem; color: var(--manon-gold);
+            background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.2);
+            padding: 2px 8px; border-radius: 4px;
+        }
+        .combo-note {
+            font-size: 0.71rem; color: #777; margin-top: 8px;
+            border-top: 1px dashed #252525; padding-top: 7px; font-style: italic;
+        }
+
+        /* ===== 五十音表 ===== */
+        .legend-container {
+            padding: 10px 10px 20px; max-width: 600px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .legend-split-layout { display: flex; gap: 8px; }
+        .legend-split-layout > .legend-section { flex: 1; min-width: 0; }
+        .legend-section {
+            background: rgba(255,255,255,0.03); border: 1px solid #333;
+            border-radius: 8px; padding: 8px;
+        }
+        .legend-section.system-section {
+            border-color: var(--system-teal); background: rgba(38,198,218,0.04);
+        }
+        .legend-section-title {
+            color: var(--manon-gold); font-size: 0.8rem;
+            margin: 0 0 6px; border-bottom: 1px solid #444; padding-bottom: 4px;
+        }
+        .legend-section.system-section .legend-section-title { color: var(--system-teal); }
+        .legend-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; }
+        .legend-grid.two-col { grid-template-columns: repeat(2,1fr); }
+        .legend-item {
+            display: flex; align-items: center; gap: 4px;
+            background: #111; padding: 4px; border-radius: 4px; border: 1px solid #222;
+            cursor: pointer; transition: background-color 0.2s, transform 0.1s;
+        }
+        .legend-item:not(.empty):hover, .legend-item:not(.empty):active { background-color: #333; transform: scale(0.97); }
+        .legend-item.empty { visibility: hidden; cursor: default; }
+        .legend-badge {
+            background-color: var(--manon-pink); color: #000; font-size: 0.6rem; font-weight: bold;
+            width: 18px; height: 18px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+        }
+        .legend-badge.sys { background-color: var(--system-teal); }
+        .legend-name { font-size: 0.65rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+        .animate-fade { opacity:0; animation:fadeInUp 0.3s ease-out forwards; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Manon Practical Analytics</h1>
+        <div class="main-tabs">
+            <button class="main-tab-btn active" id="btn-view-main">📊 技データ</button>
+            <button class="main-tab-btn" id="btn-view-legend">📖 五十音表</button>
+            <button class="main-tab-btn" id="btn-view-combo">🥊 コンボ表</button>
+        </div>
+        <div class="controls" id="controls-area">
+            <div class="filter-tabs">
+                <div class="filter-btn active" data-type="all">すべて</div>
+                <div class="filter-btn" data-type="normal">通常技</div>
+                <div class="filter-btn" data-type="unique">特殊技</div>
+                <div class="filter-btn" data-type="special">必殺/SA</div>
+                <div class="filter-btn" data-type="system">システム</div>
+            </div>
+            <div class="medal-controls">
+                <span class="medal-label">MEDAL LV</span>
+                <div class="medal-btns">
+                    <div class="medal-btn" data-level="1">1</div>
+                    <div class="medal-btn" data-level="2">2</div>
+                    <div class="medal-btn active" data-level="3">3</div>
+                    <div class="medal-btn" data-level="4">4</div>
+                    <div class="medal-btn" data-level="5">5</div>
+                </div>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="技名、コマンド、またはID(あ,い...)で検索">
+                <button id="search-clear">×</button>
+            </div>
+            <div class="mini-legend">
+                <span><strong>P:</strong> あ〜け</span>
+                <span><strong>K:</strong> さ〜て</span>
+                <span><strong>必:</strong> な〜よ</span>
+                <span><strong>他:</strong> へ〜を</span>
+                <span class="sys-hint"><strong>SYS:</strong> ど・ば</span>
+            </div>
+            <select class="sort-select" id="sort-select">
+                <option value="score_desc">実戦スコア順 (納得度優先)</option>
+                <option value="startup_asc">発生の早い順 (最速・暴れ)</option>
+                <option value="damage_desc">ダメージ順 (最大火力)</option>
+                <option value="id_asc">ID順 (あいうえお順)</option>
+            </select>
+        </div>
+        <button id="menu-toggle" class="menu-toggle-btn">▲ メニューを閉じる</button>
+    </header>
+
+    <!-- 技データ -->
+    <div id="view-main">
+        <div id="card-container"></div>
+        <section style="max-width:600px;margin:30px auto;padding:25px;color:var(--text-sub);font-size:0.85rem;background:rgba(0,0,0,0.4);border-radius:15px;">
+            <h3 style="color:var(--manon-gold);">実戦評価ロジック：マノン・ポテンシャル v2</h3>
+            <p>フレームデータに「プロの定石」と「キャラ相性」を加味した最新のスコアリングです。</p>
+            <ul style="padding-left:18px;line-height:1.8;">
+                <li><strong>【神技ボーナス】:</strong> 2MPやメダル技など、代わりが効かない主力に大幅加点。</li>
+                <li><strong>【ガード有利評価】:</strong> スト6の攻防において最重要のため、有利1F毎に+15点。</li>
+                <li><strong>【SA3ペナルティ】:</strong> 投げ属性のデメリット（暗転回避）により大幅減点。</li>
+                <li><strong>【死に技減点】:</strong> ガード確反があるキャンセル不可技（5MK等）は評価を下落。</li>
+                <li style="color:var(--system-teal)"><strong>【システム技】:</strong> DI(ど)・CR(ば)はスコア計算対象外。コンボタブで活用。</li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- 五十音表 -->
+    <div id="view-legend" style="display:none;">
+        <div class="legend-container animate-fade">
+            <div class="legend-split-layout">
+                <div class="legend-section">
+                    <h3 class="legend-section-title">■ P系 (あ〜け)</h3>
+                    <div class="legend-grid">
+                        <div class="legend-item"><div class="legend-badge">あ</div><div class="legend-name">立小P</div></div>
+                        <div class="legend-item"><div class="legend-badge">い</div><div class="legend-name">立中P</div></div>
+                        <div class="legend-item"><div class="legend-badge">う</div><div class="legend-name">立強P</div></div>
+                        <div class="legend-item"><div class="legend-badge">え</div><div class="legend-name">屈小P</div></div>
+                        <div class="legend-item"><div class="legend-badge">お</div><div class="legend-name">屈中P</div></div>
+                        <div class="legend-item"><div class="legend-badge">か</div><div class="legend-name">屈強P</div></div>
+                        <div class="legend-item"><div class="legend-badge">き</div><div class="legend-name">J小P</div></div>
+                        <div class="legend-item"><div class="legend-badge">く</div><div class="legend-name">J中P</div></div>
+                        <div class="legend-item"><div class="legend-badge">け</div><div class="legend-name">J強P</div></div>
+                    </div>
+                </div>
+                <div class="legend-section">
+                    <h3 class="legend-section-title">■ K系 (さ〜て)</h3>
+                    <div class="legend-grid">
+                        <div class="legend-item"><div class="legend-badge">さ</div><div class="legend-name">立小K</div></div>
+                        <div class="legend-item"><div class="legend-badge">し</div><div class="legend-name">立中K</div></div>
+                        <div class="legend-item"><div class="legend-badge">す</div><div class="legend-name">立強K</div></div>
+                        <div class="legend-item"><div class="legend-badge">せ</div><div class="legend-name">屈小K</div></div>
+                        <div class="legend-item"><div class="legend-badge">そ</div><div class="legend-name">屈中K</div></div>
+                        <div class="legend-item"><div class="legend-badge">た</div><div class="legend-name">屈強K</div></div>
+                        <div class="legend-item"><div class="legend-badge">ち</div><div class="legend-name">J小K</div></div>
+                        <div class="legend-item"><div class="legend-badge">つ</div><div class="legend-name">J中K</div></div>
+                        <div class="legend-item"><div class="legend-badge">て</div><div class="legend-name">J強K</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="legend-section">
+                <h3 class="legend-section-title">■ 必殺技 (な〜よ)</h3>
+                <div class="legend-grid">
+                    <div class="legend-item"><div class="legend-badge">な</div><div class="legend-name">ロン弱</div></div>
+                    <div class="legend-item"><div class="legend-badge">に</div><div class="legend-name">ロン中</div></div>
+                    <div class="legend-item"><div class="legend-badge">ぬ</div><div class="legend-name">ロン強</div></div>
+                    <div class="legend-item"><div class="legend-badge">は</div><div class="legend-name">デガ弱</div></div>
+                    <div class="legend-item"><div class="legend-badge">ひ</div><div class="legend-name">デガ中</div></div>
+                    <div class="legend-item"><div class="legend-badge">ふ</div><div class="legend-name">デガ強</div></div>
+                    <div class="legend-item"><div class="legend-badge">ま</div><div class="legend-name">ラン弱</div></div>
+                    <div class="legend-item"><div class="legend-badge">み</div><div class="legend-name">ラン中</div></div>
+                    <div class="legend-item"><div class="legend-badge" style="background:var(--manon-gold)">む</div><div class="legend-name">ラン強</div></div>
+                    <div class="legend-item"><div class="legend-badge">や</div><div class="legend-name">マネ弱</div></div>
+                    <div class="legend-item"><div class="legend-badge">ゆ</div><div class="legend-name">マネ中</div></div>
+                    <div class="legend-item"><div class="legend-badge" style="background:var(--manon-gold)">よ</div><div class="legend-name">マネ強</div></div>
+                </div>
+            </div>
+            <div class="legend-section">
+                <h3 class="legend-section-title">■ 特殊・OD・SA (へ〜を)</h3>
+                <div class="legend-grid">
+                    <div class="legend-item"><div class="legend-badge" style="background:var(--manon-gold)">へ</div><div class="legend-name">アンオー</div></div>
+                    <div class="legend-item"><div class="legend-badge">ほ</div><div class="legend-name">アラベス</div></div>
+                    <div class="legend-item"><div class="legend-badge">ら</div><div class="legend-name">ODマネ</div></div>
+                    <div class="legend-item"><div class="legend-badge">り</div><div class="legend-name">ODラン</div></div>
+                    <div class="legend-item"><div class="legend-badge">る</div><div class="legend-name">ODデガ</div></div>
+                    <div class="legend-item"><div class="legend-badge">れ</div><div class="legend-name">ODロン</div></div>
+                    <div class="legend-item"><div class="legend-badge">ろ</div><div class="legend-name">SA1</div></div>
+                    <div class="legend-item"><div class="legend-badge" style="background:var(--manon-gold)">わ</div><div class="legend-name">SA2</div></div>
+                    <div class="legend-item"><div class="legend-badge">を</div><div class="legend-name">SA3</div></div>
+                </div>
+            </div>
+            <!-- システム技セクション（NEW） -->
+            <div class="legend-section system-section">
+                <h3 class="legend-section-title">■ システム技 (ど・ば) — 濁音行</h3>
+                <div class="legend-grid two-col">
+                    <div class="legend-item">
+                        <div class="legend-badge sys">ど</div>
+                        <div class="legend-name">Dインパクト</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-badge sys">ば</div>
+                        <div class="legend-name">キャンセルR</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- コンボ表 -->
+    <div id="view-combo" style="display:none;">
+        <div id="combo-container"></div>
+    </div>
+
+    <script>
+    // ============================================================
+    // 技データ
+    // ============================================================
+    const manonMoves = [
+        {id:"あ",name:"立ち弱P",    command:"5LP",       type:"normal",  startup:5,  active:3,damage:300, guard:-2, hit:4,    cancel:true, reach:0,tags:["上段"]},
+        {id:"い",name:"立ち中P",    command:"5MP",       type:"normal",  startup:7,  active:3,damage:600, guard:-1, hit:5,    cancel:true, reach:1,isCore:true,note:"ヒット確認が容易でタゲコンにも繋がる万能技。",tags:["上段"]},
+        {id:"う",name:"立ち強P",    command:"5HP",       type:"normal",  startup:10, active:3,damage:800, guard:-3, hit:3,    cancel:true, reach:2,isCore:true,note:"中距離の主軸。引き寄せ効果がコマ投げと絶大な相性。",tags:["上段","引き寄せ"]},
+        {id:"え",name:"しゃがみ弱P",command:"2LP",       type:"normal",  startup:4,  active:3,damage:200, guard:-2, hit:4,    cancel:true, reach:0,tags:["最速","連打可"]},
+        {id:"お",name:"しゃがみ中P",command:"2MP",       type:"normal",  startup:6,  active:3,damage:600, guard:1,  hit:5,    cancel:true, reach:1,isCore:true,note:"マノンの心臓。ガードさせて有利な唯一無二の起点。",tags:["上段","固め"]},
+        {id:"か",name:"しゃがみ強P",command:"2HP",       type:"normal",  startup:11, active:3,damage:800, guard:-8, hit:"Down",cancel:false,reach:2,tags:["上段","対空"]},
+        {id:"き",name:"ジャンプ弱P",command:"JLP",       type:"normal",  startup:4,  active:3,damage:300, guard:2,  hit:6,    cancel:false,reach:1,tags:["空中"]},
+        {id:"く",name:"ジャンプ中P",command:"JMP",       type:"normal",  startup:7,  active:3,damage:600, guard:4,  hit:8,    cancel:false,reach:1,tags:["空中"]},
+        {id:"け",name:"ジャンプ強P",command:"JHP",       type:"normal",  startup:10, active:3,damage:800, guard:6,  hit:12,   cancel:false,reach:2,tags:["空中"]},
+        {id:"さ",name:"立ち弱K",    command:"5LK",       type:"normal",  startup:5,  active:3,damage:300, guard:-1, hit:3,    cancel:false,reach:0,tags:["上段"]},
+        {id:"し",name:"立ち中K",    command:"5MK",       type:"normal",  startup:9,  active:3,damage:600, guard:-5, hit:-1,   cancel:false,reach:2,isReplaceable:true,note:"キャンセル不可でガード確反あり。5HPや2MKで代用可能。",tags:["上段","牽制"]},
+        {id:"す",name:"立ち強K",    command:"5HK",       type:"normal",  startup:14, active:3,damage:800, guard:-3, hit:1,    cancel:false,reach:3,tags:["上段","牽制"]},
+        {id:"せ",name:"しゃがみ弱K",command:"2LK",       type:"normal",  startup:5,  active:2,damage:200, guard:-2, hit:2,    cancel:false,reach:0,tags:["下段"]},
+        {id:"そ",name:"しゃがみ中K",command:"2MK",       type:"normal",  startup:8,  active:3,damage:500, guard:-4, hit:1,    cancel:false,reach:2,tags:["下段"]},
+        {id:"た",name:"しゃがみ強K",command:"2HK",       type:"normal",  startup:10, active:3,damage:800, guard:-10,hit:"Down",cancel:false,reach:2,tags:["下段","大足"]},
+        {id:"ち",name:"ジャンプ弱K",command:"JLK",       type:"normal",  startup:5,  active:4,damage:300, guard:2,  hit:6,    cancel:false,reach:1,tags:["空中"]},
+        {id:"つ",name:"ジャンプ中K",command:"JMK",       type:"normal",  startup:8,  active:5,damage:500, guard:3,  hit:7,    cancel:false,reach:1,tags:["空中","めくり"]},
+        {id:"て",name:"ジャンプ強K",command:"JHK",       type:"normal",  startup:12, active:3,damage:800, guard:6,  hit:12,   cancel:false,reach:2,tags:["空中"]},
+        {id:"な",name:"ロン・ポワン(弱)",      command:"236+弱K",  type:"special",startup:14,active:3,damage:800, guard:-8, hit:"Down",cancel:false,reach:2,tags:["対空"]},
+        {id:"に",name:"ロン・ポワン(中)",      command:"236+中K",  type:"special",startup:16,active:3,damage:1000,guard:-10,hit:"Down",cancel:false,reach:2,tags:["対空","コンボ"]},
+        {id:"ぬ",name:"ロン・ポワン(強)",      command:"236+強K",  type:"special",startup:18,active:3,damage:1200,guard:-12,hit:"Down",cancel:false,reach:2,tags:["対空","コンボ"]},
+        {id:"は",name:"デガジェ(弱)",          command:"214+弱K",  type:"special",startup:16,active:3,damage:700, guard:-8, hit:"Down",cancel:false,reach:2,tags:["下段"]},
+        {id:"ひ",name:"デガジェ(中)",          command:"214+中K",  type:"special",startup:18,active:3,damage:800, guard:-6, hit:"Down",cancel:false,reach:2,tags:["中段"]},
+        {id:"ふ",name:"デガジェ(強)",          command:"214+強K",  type:"special",startup:22,active:3,damage:1000,guard:-4, hit:"Down",cancel:false,reach:2,tags:["中段","コンボ"]},
+        {id:"ま",name:"ランヴェルセ(弱)",      command:"214+弱P",  type:"special",startup:16,active:4,damage:1400,guard:-10,hit:"Down",cancel:false,reach:1,tags:["打撃投げ","メダル用"]},
+        {id:"み",name:"ランヴェルセ(中)",      command:"214+中P",  type:"special",startup:18,active:4,damage:1700,guard:-10,hit:"Down",cancel:false,reach:1,tags:["打撃投げ","メダル用"]},
+        {id:"む",name:"ランヴェルセ(強)",      command:"214+強P",  type:"special",startup:20,active:4,damage:2000,guard:-10,hit:"Down",cancel:false,reach:1,isCore:true,note:"コンボ締め・対空でメダルを稼ぐための最重要技。",tags:["打撃投げ","メダル用"]},
+        {id:"や",name:"マネージュ・ドレ(弱)",  command:"半回転+弱P",type:"special",startup:5, active:2,damage:2000,guard:null,hit:"Down",cancel:false,reach:2,tags:["コマ投げ","ガード不可"]},
+        {id:"ゆ",name:"マネージュ・ドレ(中)",  command:"半回転+中P",type:"special",startup:5, active:2,damage:2300,guard:null,hit:"Down",cancel:false,reach:1,tags:["コマ投げ","ガード不可"]},
+        {id:"よ",name:"マネージュ・ドレ(強)",  command:"半回転+強P",type:"special",startup:5, active:2,damage:2700,guard:null,hit:"Down",cancel:false,reach:0,isCore:true,note:"マノンの象徴。メダルLvに応じた破壊力は最強クラス。",tags:["コマ投げ","ガード不可"]},
+        {id:"へ",name:"アン・オー",            command:"4HP",       type:"unique", startup:12,active:4,damage:800, guard:-4, hit:"Down",cancel:true, reach:1,isCore:true,note:"対空・コンボの要。メダル獲得への重要ルート。",tags:["対空","コンボ"]},
+        {id:"ほ",name:"アラベスク",            command:"6MK",       type:"unique", startup:13,active:2,damage:600, guard:-4, hit:2,    cancel:false,reach:2,isReplaceable:true,note:"発生が遅くリスクが高い。ラッシュ以外では不要。",tags:["中段"]},
+        {id:"ら",name:"OD マネージュ・ドレ",   command:"半回転+PP", type:"special",startup:5, active:2,damage:3300,guard:null,hit:"Down",cancel:false,reach:1,tags:["コマ投げ","OD"]},
+        {id:"り",name:"OD ランヴェルセ",       command:"214+PP",    type:"special",startup:16,active:4,damage:2200,guard:-10,hit:"Down",cancel:false,reach:2,tags:["打撃投げ","アーマー","OD"]},
+        {id:"る",name:"OD デガジェ",           command:"214+KK",    type:"special",startup:16,active:3,damage:1200,guard:-3, hit:"Down",cancel:false,reach:2,tags:["下段","OD"]},
+        {id:"れ",name:"OD ロン・ポワン",       command:"236+KK",    type:"special",startup:8, active:6,damage:1200,guard:-15,hit:"Down",cancel:false,reach:2,tags:["完全無敵","OD"]},
+        {id:"ろ",name:"SA1 アラベスク・ドゥ",  command:"236236+K",  type:"special",startup:10,active:3,damage:2000,guard:-32,hit:"Down",cancel:false,reach:2,tags:["無敵","SA"]},
+        {id:"わ",name:"SA2 エトワール",        command:"214214+P",  type:"special",startup:13,active:9,damage:2800,guard:-21,hit:"Down",cancel:false,reach:1,isCore:true,note:"完全無敵。対空・切り返し・コンボとSA3より圧倒的に汎用性が高い。",tags:["無敵","対空"]},
+        {id:"を",name:"SA3 パ・ド・ドゥ",      command:"236236+P",  type:"special",startup:7, active:2,damage:4000,guard:null,hit:"Down",cancel:false,reach:0,isReplaceable:true,note:"暗転を見てからジャンプ回避可能。コンボ制限も多く、実戦評価は極めて低い。",tags:["投げSA","暗転回避可"]},
+        // ===== システム技（NEW）=====
+        {id:"ど",name:"ドライブインパクト",command:"強P+強K",      type:"system",startup:20,active:5,damage:2000,guard:-8, hit:"壁張付",cancel:false,reach:3,note:"壁張り付き・パニカン始動の強行動。相手のDIで相殺可。コンボはパニカン時のみ。",tags:["システム","壁張付","パニカン始動"]},
+        {id:"ば",name:"キャンセルラッシュ",command:"パリィ中に66", type:"system",startup:null,active:null,damage:0,guard:null,hit:null,cancel:false,reach:0,note:"Dゲージ3本消費。ヒット/ガード問わず発動可。マノンのコンボ中継主軸技。",tags:["システム","Dゲージ3本","中継"]},
+    ];
+
+    // ============================================================
+    // コンボデータ
+    // ============================================================
+    const manonCombos = [
+        {
+            id:"basic", label:"🥋 基本コンボ", catClass:"cat-basic",
+            combos:[
+                {
+                    name:"CR基本（必須中の必須）",
+                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"へ"},{t:"m",id:"み"}],
+                    recipe:"立中P → CR → 屈中P → アン・オー → 中ランヴェルセ",
+                    damage:{1:2900,2:3050,3:3200,4:3400,5:3700},
+                    difficulty:2, condition:"地上ヒット確認後",
+                    note:"ガードさせたら強マネ択。立中K・屈中K始動でも代替可。マノン最頻出コンボ。",
+                    medalGain:1
+                },
+                {
+                    name:"小技コンボ",
+                    steps:[{t:"m",id:"え"},{t:"m",id:"え"},{t:"m",id:"ぬ"}],
+                    recipe:"屈弱P → 屈弱P → 強ロンポワン",
+                    damage:{1:700,2:700,3:700,4:700,5:700},
+                    difficulty:1, condition:"近距離確反・暴れ潰し",
+                    note:"前ステ後に+16有利。起き攻め継続へ。メダル変動なし。",
+                    medalGain:0
+                },
+                {
+                    name:"J中K始動（めくり対応）",
+                    steps:[{t:"m",id:"つ"},{t:"m",id:"え"},{t:"m",id:"え"},{t:"m",id:"ぬ"}],
+                    recipe:"J中K → 屈弱P → 屈弱P → 強ロンポワン",
+                    damage:{1:1500,2:1500,3:1500,4:1500,5:1500},
+                    difficulty:1, condition:"飛び込みヒット後",
+                    note:"めくり対応なので表裏関係なく安定。初心者向けの飛び込みコンボ。",
+                    medalGain:0
+                },
+            ]
+        },
+        {
+            id:"medal", label:"🏅 メダル稼ぎルート", catClass:"cat-medal",
+            combos:[
+                {
+                    name:"CR強ランヴェルセ締め",
+                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"へ"},{t:"m",id:"む"}],
+                    recipe:"立中P → CR → 屈中P → アン・オー → 強ランヴェルセ",
+                    damage:{1:3200,2:3400,3:3600,4:3800,5:4200},
+                    difficulty:2, condition:"ヒット確認後（メダル優先時）",
+                    note:"基本コンボより高ダメ。Lv5到達後はコマ投げ択に移行するかの判断も重要。",
+                    medalGain:1
+                },
+                {
+                    name:"DIパニカン始動",
+                    steps:[{t:"m",id:"ど"},{t:"a",label:"前ステ"},{t:"m",id:"へ"},{t:"m",id:"れ"},{t:"m",id:"み"}],
+                    recipe:"DI(パニカン) → 前ステ → アン・オー → ODロンポワン → 中ランヴェルセ",
+                    damage:{1:3000,2:3200,3:3400,4:3600,5:3900},
+                    difficulty:3, condition:"DIパニッシュカウンター時",
+                    note:"前ステでタイミングを作るのが鍵。壁ドン後も同ルートで対応可。",
+                    medalGain:1
+                },
+                {
+                    name:"アンオー始動 コスパ最強",
+                    steps:[{t:"m",id:"へ"},{t:"m",id:"り"},{t:"m",id:"へ"},{t:"m",id:"ぬ"},{t:"m",id:"ま"}],
+                    recipe:"アン・オー → ODランヴェルセ → アン・オー → 強ロンポワン → 弱ランヴェルセ",
+                    damage:{1:2800,2:3000,3:3200,4:3400,5:3700},
+                    difficulty:2, condition:"アン・オーヒット後",
+                    note:"ODランヴェルセの火力上昇＋ゲージ回収が強力。メダルを2段階一気に稼ぐ。",
+                    medalGain:2
+                },
+            ]
+        },
+        {
+            id:"sa2", label:"⭐ SA2締めルート", catClass:"cat-sa2",
+            combos:[
+                {
+                    name:"CR→SA2締め",
+                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"へ"},{t:"m",id:"わ"}],
+                    recipe:"立中P → CR → 屈中P → アン・オー → SA2",
+                    damage:{1:4100,2:4300,3:4500,4:4700,5:5000},
+                    difficulty:2, condition:"SA2ゲージあり・ヒット確認後",
+                    note:"完全無敵フィニッシャー。ゲージが溜まったら積極的に狙う最強の締め技。",
+                    medalGain:0
+                },
+                {
+                    name:"J強K→SA2フィニッシャー",
+                    steps:[{t:"m",id:"て"},{t:"m",id:"へ"},{t:"m",id:"ひ"},{t:"m",id:"わ"}],
+                    recipe:"J強K → アン・オー → 中デガジェ → SA2",
+                    damage:{1:3800,2:4000,3:4200,4:4400,5:4700},
+                    difficulty:3, condition:"近距離J強K始動・SA2ゲージあり",
+                    note:"高火力フィニッシャー。めくり非対応なので位置確認必須。",
+                    medalGain:0
+                },
+            ]
+        },
+        {
+            id:"antiair", label:"✈️ 対空コンボ", catClass:"cat-antiair",
+            combos:[
+                {
+                    name:"強ロンポワン対空→メダル獲得",
+                    steps:[{t:"m",id:"ぬ"},{t:"m",id:"む"}],
+                    recipe:"強ロンポワン → 強ランヴェルセ",
+                    damage:{1:2700,2:2900,3:3100,4:3300,5:3500},
+                    difficulty:2, condition:"対空ヒット後",
+                    note:"対空でもメダルを稼げるマノン固有の強み。間合いとタイミング管理が鍵。",
+                    medalGain:1
+                },
+                {
+                    name:"生SA2対空（最安定）",
+                    steps:[{t:"m",id:"わ"}],
+                    recipe:"SA2（単発）",
+                    damage:{1:2800,2:2800,3:2800,4:2800,5:2800},
+                    difficulty:1, condition:"相手飛び込み確認後",
+                    note:"完全無敵で最も安定。メダルは稼げないがゲージが溜まったら迷わず使う。",
+                    medalGain:0
+                },
+            ]
+        }
+    ];
+
+    // ============================================================
+    // 状態
+    // ============================================================
+    let currentFilter='all', currentSort='score_desc', currentMedalLevel=3, currentSearchTerm='';
+
+    // ============================================================
+    // ヘッダー高さ自動調整
+    // ============================================================
+    function adjustPadding() {
+        const h = document.querySelector('header');
+        document.body.style.paddingTop = (h.offsetHeight + 15) + 'px';
+    }
+    window.addEventListener('resize', adjustPadding);
+
+    // ============================================================
+    // スコア計算
+    // ============================================================
+    function calculateScore(move) {
+        if (move.type === 'system') return 0;
+        let score = 0;
+        score += Math.floor(move.damage / 100);
+        if (move.startup && move.startup <= 10) score += (15 - move.startup) * 2;
+        if (move.guard !== null && move.guard !== undefined) {
+            if (move.guard > 0)   score += move.guard * 15;
+            if (move.guard <= -4) score += move.guard * 4;
+        } else if (move.guard === null && move.type !== 'system') {
+            score += 25;
+        }
+        if (move.isCore)        score += 30;
+        if (move.isReplaceable) score -= 25;
+        if (move.name.includes("SA3")) score -= 60;
+        return Math.max(0, score);
+    }
+
+    // ============================================================
+    // 技カード描画
+    // ============================================================
+    function renderCards(movesToRender) {
+        const container = document.getElementById('card-container');
+        container.innerHTML = '';
+        movesToRender.forEach((move, index) => {
+            const isGod = move.isCore, isWeak = move.isReplaceable, isSys = move.type === 'system';
+            const getGuardClass = v => (v===null||v===undefined||v>=0)?'value-safe':(v<=-4?'value-danger':'');
+
+            let tagsHtml = move.tags.map(t => `<span class="tag${t==='システム'?' sys':''}">${t}</span>`).join('');
+            if (isSys)       tagsHtml = `<span class="tag sys">⚙ システム技</span>` + tagsHtml;
+            else if (isGod)  tagsHtml = `<span class="tag god">★ 神技</span>` + tagsHtml;
+            else if (isWeak) tagsHtml = `<span class="tag warning">⚠ 代用あり</span>` + tagsHtml;
+
+            const dmgTxt   = (isSys && move.damage===0) ? '—' : move.damage;
+            const grdTxt   = (move.guard===null||move.guard===undefined) ? '不可'
+                           : (move.startup===null ? '—' : (move.guard>0?'+':'')+move.guard+'F');
+            const stTxt    = move.startup===null ? '—' : move.startup+'F';
+            const scoreTxt = isSys ? `<span class="skill-score sys-score">SYSTEM</span>`
+                           : `<span class="skill-score">Score: ${Math.floor(move.score)}</span>`;
+            const cardCls  = isSys ? 'system-tier' : (isGod ? 'god-tier' : (isWeak ? 'replaceable' : ''));
+            const noteTxt  = move.note ? `<div class="note-text">${move.note}</div>` : '';
+
+            container.innerHTML += `
+                <div class="skill-card animate-fade ${cardCls}" style="animation-delay:${index*0.04}s">
+                    <div class="skill-header">
+                        <div>
+                            <div class="skill-name-wrapper">
+                                <div class="skill-id-badge">${move.id}</div>
+                                <h2 class="skill-name">${move.name}</h2>
+                            </div>
+                            <div class="skill-command">${move.command}</div>
+                        </div>
+                        ${scoreTxt}
+                    </div>
+                    <div class="param-grid">
+                        <div class="param-item"><span class="param-label">発生</span><span class="param-value">${stTxt}</span></div>
+                        <div class="param-item"><span class="param-label">ダメージ</span><span class="param-value">${dmgTxt}</span></div>
+                        <div class="param-item"><span class="param-label">ガード</span><span class="param-value ${getGuardClass(move.guard)}">${grdTxt}</span></div>
+                    </div>
+                    <div class="tag-container">${tagsHtml}</div>
+                    ${noteTxt}
+                </div>`;
+        });
+    }
+
+    // ============================================================
+    // コンボカード描画
+    // ============================================================
+    function getStepBadgeCls(id) {
+        const m = manonMoves.find(x => x.id === id);
+        if (!m) return 'type-normal';
+        return m.type==='system' ? 'type-system' : (m.isCore ? 'type-god' : 'type-normal');
+    }
+
+    function renderStars(n) {
+        return [1,2,3].map(i => `<span class="${i<=n?'star-on':'star-off'}">★</span>`).join('');
+    }
+
+    function renderCombos() {
+        const container = document.getElementById('combo-container');
+        container.innerHTML = '';
+        manonCombos.forEach(cat => {
+            const label = document.createElement('div');
+            label.className = 'combo-category-label animate-fade';
+            label.textContent = cat.label;
+            container.appendChild(label);
+
+            cat.combos.forEach((combo, idx) => {
+                const dmg = combo.damage[currentMedalLevel] || combo.damage[3];
+                let stepsHtml = '';
+                combo.steps.forEach((s, i) => {
+                    if (i > 0) stepsHtml += `<span class="combo-arrow">›</span>`;
+                    if (s.t === 'm') {
+                        stepsHtml += `<div class="combo-step-badge ${getStepBadgeCls(s.id)}">${s.id}</div>`;
+                    } else {
+                        stepsHtml += `<span class="combo-step-action">${s.label}</span>`;
+                    }
+                });
+                const medalHtml = combo.medalGain > 0
+                    ? `<span class="combo-medal-gain">🏅 +${combo.medalGain}</span>` : '';
+
+                const card = document.createElement('div');
+                card.className = `combo-card animate-fade ${cat.catClass}`;
+                card.style.animationDelay = `${idx * 0.06}s`;
+                card.innerHTML = `
+                    <div class="combo-card-header">
+                        <div class="combo-name">${combo.name}</div>
+                        <div class="combo-damage">${dmg.toLocaleString()}</div>
+                    </div>
+                    <div class="combo-steps">${stepsHtml}</div>
+                    <div class="combo-recipe">${combo.recipe}</div>
+                    <div class="combo-meta">
+                        <div class="combo-difficulty">${renderStars(combo.difficulty)}</div>
+                        <span class="combo-condition">${combo.condition}</span>
+                        ${medalHtml}
+                    </div>
+                    ${combo.note ? `<div class="combo-note">${combo.note}</div>` : ''}
+                `;
+                container.appendChild(card);
+            });
+        });
+    }
+
+    // ============================================================
+    // 技データ更新
+    // ============================================================
+    function updateDisplay() {
+        manonMoves.forEach(m => {
+            if (m.name.includes("マネージュ・ドレ")) {
+                if(m.id==="や") m.damage={1:2000,2:2300,3:2700,4:3000,5:3700}[currentMedalLevel];
+                if(m.id==="ゆ") m.damage={1:2300,2:2600,3:3000,4:3300,5:4000}[currentMedalLevel];
+                if(m.id==="よ") m.damage={1:2700,2:3000,3:3400,4:3700,5:4500}[currentMedalLevel];
+            } else if (m.name.includes("ランヴェルセ")) {
+                if(m.id==="ま") m.damage={1:1400,2:1600,3:1800,4:2000,5:2200}[currentMedalLevel];
+                if(m.id==="み") m.damage={1:1700,2:1900,3:2100,4:2300,5:2500}[currentMedalLevel];
+                if(m.id==="む") m.damage={1:2000,2:2200,3:2400,4:2600,5:2800}[currentMedalLevel];
+            }
+            m.score = calculateScore(m);
+        });
+        let filtered = manonMoves.filter(m => {
+            const matchType   = currentFilter==='all' || m.type===currentFilter;
+            const matchSearch = m.name.toLowerCase().includes(currentSearchTerm)
+                             || m.command.toLowerCase().includes(currentSearchTerm)
+                             || (m.id && m.id===currentSearchTerm);
+            return matchType && matchSearch;
+        });
+        filtered.sort((a,b) => {
+            if(currentSort==='score_desc')  return b.score - a.score;
+            if(currentSort==='startup_asc') return (a.startup||99)-(b.startup||99);
+            if(currentSort==='damage_desc') return b.damage - a.damage;
+            if(currentSort==='id_asc')      return a.id.localeCompare(b.id,'ja');
+            return 0;
+        });
+        renderCards(filtered);
+        document.getElementById('search-clear').style.display = currentSearchTerm ? 'block' : 'none';
+    }
+
+    // ============================================================
+    // タブ切り替え
+    // ============================================================
+    function switchTab(tab) {
+        document.getElementById('view-main').style.display   = 'none';
+        document.getElementById('view-legend').style.display = 'none';
+        document.getElementById('view-combo').style.display  = 'none';
+        document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
+        const ctrl = document.getElementById('controls-area');
+        ctrl.classList.remove('combo-mode');
+
+        if (tab === 'main') {
+            document.getElementById('view-main').style.display = 'block';
+            document.getElementById('btn-view-main').classList.add('active');
+            document.getElementById('menu-toggle').style.display = 'block';
+        } else if (tab === 'legend') {
+            document.getElementById('view-legend').style.display = 'block';
+            document.getElementById('btn-view-legend').classList.add('active');
+            document.getElementById('menu-toggle').style.display = 'none';
+            ctrl.classList.add('collapsed');
+        } else if (tab === 'combo') {
+            document.getElementById('view-combo').style.display = 'block';
+            document.getElementById('btn-view-combo').classList.add('active');
+            document.getElementById('menu-toggle').style.display = 'block';
+            ctrl.classList.remove('collapsed');
+            ctrl.classList.add('combo-mode');
+            renderCombos();
+        }
+        setTimeout(adjustPadding, 50);
+    }
+
+    // ============================================================
+    // イベントリスナー
+    // ============================================================
+    const menuToggleBtn = document.getElementById('menu-toggle');
+    const controlsDiv   = document.getElementById('controls-area');
+
+    menuToggleBtn.addEventListener('click', () => {
+        controlsDiv.classList.toggle('collapsed');
+        menuToggleBtn.textContent = controlsDiv.classList.contains('collapsed')
+            ? '▼ メニューを開く' : '▲ メニューを閉じる';
+        setTimeout(adjustPadding, 320);
+    });
+
+    document.getElementById('btn-view-main').addEventListener('click',   () => switchTab('main'));
+    document.getElementById('btn-view-legend').addEventListener('click', () => switchTab('legend'));
+    document.getElementById('btn-view-combo').addEventListener('click',  () => switchTab('combo'));
+
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', e => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.getAttribute('data-type');
+        updateDisplay();
+    }));
+
+    document.getElementById('sort-select').addEventListener('change', e => {
+        currentSort = e.target.value; updateDisplay();
+    });
+    document.getElementById('search-input').addEventListener('input', e => {
+        currentSearchTerm = e.target.value.toLowerCase(); updateDisplay();
+    });
+    document.getElementById('search-clear').addEventListener('click', () => {
+        document.getElementById('search-input').value = '';
+        currentSearchTerm = ''; updateDisplay();
+    });
+
+    document.querySelectorAll('.medal-btn').forEach(btn => btn.addEventListener('click', e => {
+        document.querySelectorAll('.medal-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentMedalLevel = parseInt(e.target.getAttribute('data-level'));
+        updateDisplay();
+        if (document.getElementById('view-combo').style.display !== 'none') renderCombos();
+    }));
+
+    document.querySelectorAll('.legend-item:not(.empty)').forEach(item => {
+        item.addEventListener('click', () => {
+            const id = item.querySelector('.legend-badge').textContent;
+            document.getElementById('search-input').value = id;
+            currentSearchTerm = id;
+            switchTab('main');
+            updateDisplay();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+
+    // 初期化
+    updateDisplay();
+    setTimeout(adjustPadding, 100);
+    </script>
+</body>
+</html>
