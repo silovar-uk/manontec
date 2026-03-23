@@ -449,7 +449,7 @@
     const manonMoves = [
         {id:"あ",name:"立ち弱P",    command:"5LP",       type:"normal",  startup:5,  active:3,damage:300, guard:-2, hit:4,    cancel:true, reach:0,tags:["上段"]},
         {id:"い",name:"立ち中P",    command:"5MP",       type:"normal",  startup:7,  active:3,damage:600, guard:-1, hit:5,    cancel:true, reach:1,isCore:true,note:"ヒット確認が容易でタゲコンにも繋がる万能技。",tags:["上段"]},
-        {id:"う",name:"立ち強P",    command:"5HP",       type:"normal",  startup:10, active:3,damage:800, guard:-3, hit:3,    cancel:true, reach:2,isCore:true,note:"中距離の主軸。引き寄せ効果がコマ投げと絶大な相性。",tags:["上段","引き寄せ"]},
+        {id:"う",name:"立ち強P",    command:"5HP",       type:"normal",  startup:10, active:3,damage:800, guard:-3, hit:3,    cancel:true, reach:2,isCore:true,note:"中距離の主軸。引き寄せ効果がコマ投げ(よ)と絶大な相性。",tags:["上段","引き寄せ"]},
         {id:"え",name:"しゃがみ弱P",command:"2LP",       type:"normal",  startup:4,  active:3,damage:200, guard:-2, hit:4,    cancel:true, reach:0,tags:["最速","連打可"]},
         {id:"お",name:"しゃがみ中P",command:"2MP",       type:"normal",  startup:6,  active:3,damage:600, guard:1,  hit:5,    cancel:true, reach:1,isCore:true,note:"マノンの心臓。ガードさせて有利な唯一無二の起点。",tags:["上段","固め"]},
         {id:"か",name:"しゃがみ強P",command:"2HP",       type:"normal",  startup:11, active:3,damage:800, guard:-8, hit:"Down",cancel:false,reach:2,tags:["上段","対空"]},
@@ -457,7 +457,7 @@
         {id:"く",name:"ジャンプ中P",command:"JMP",       type:"normal",  startup:7,  active:3,damage:600, guard:4,  hit:8,    cancel:false,reach:1,tags:["空中"]},
         {id:"け",name:"ジャンプ強P",command:"JHP",       type:"normal",  startup:10, active:3,damage:800, guard:6,  hit:12,   cancel:false,reach:2,tags:["空中"]},
         {id:"さ",name:"立ち弱K",    command:"5LK",       type:"normal",  startup:5,  active:3,damage:300, guard:-1, hit:3,    cancel:false,reach:0,tags:["上段"]},
-        {id:"し",name:"立ち中K",    command:"5MK",       type:"normal",  startup:9,  active:3,damage:600, guard:-5, hit:-1,   cancel:false,reach:2,isReplaceable:true,note:"キャンセル不可でガード確反あり。5HPや2MKで代用可能。",tags:["上段","牽制"]},
+        {id:"し",name:"立ち中K",    command:"5MK",       type:"normal",  startup:9,  active:3,damage:600, guard:-5, hit:-1,   cancel:false,reach:2,isReplaceable:true,note:"キャンセル不可でガード確反あり。5HP(う)や2MK(そ)で代用可能。",tags:["上段","牽制"]},
         {id:"す",name:"立ち強K",    command:"5HK",       type:"normal",  startup:14, active:3,damage:800, guard:-3, hit:1,    cancel:false,reach:3,tags:["上段","牽制"]},
         {id:"せ",name:"しゃがみ弱K",command:"2LK",       type:"normal",  startup:5,  active:2,damage:200, guard:-2, hit:2,    cancel:false,reach:0,tags:["下段"]},
         {id:"そ",name:"しゃがみ中K",command:"2MK",       type:"normal",  startup:8,  active:3,damage:500, guard:-4, hit:1,    cancel:false,reach:2,tags:["下段"]},
@@ -484,7 +484,7 @@
         {id:"る",name:"OD デガジェ",           command:"214+KK",    type:"special",startup:16,active:3,damage:1200,guard:-3, hit:"Down",cancel:false,reach:2,tags:["下段","OD"]},
         {id:"れ",name:"OD ロン・ポワン",       command:"236+KK",    type:"special",startup:8, active:6,damage:1200,guard:-15,hit:"Down",cancel:false,reach:2,tags:["完全無敵","OD"]},
         {id:"ろ",name:"SA1 アラベスク・ドゥ",  command:"236236+K",  type:"special",startup:10,active:3,damage:2000,guard:-32,hit:"Down",cancel:false,reach:2,tags:["無敵","SA"]},
-        {id:"わ",name:"SA2 エトワール",        command:"214214+P",  type:"special",startup:13,active:9,damage:2800,guard:-21,hit:"Down",cancel:false,reach:1,isCore:true,note:"完全無敵。対空・切り返し・コンボとSA3より圧倒的に汎用性が高い。",tags:["無敵","対空"]},
+        {id:"わ",name:"SA2 エトワール",        command:"214214+P",  type:"special",startup:13,active:9,damage:2800,guard:-21,hit:"Down",cancel:false,reach:1,isCore:true,note:"完全無敵。対空・切り返し・コンボとSA3(を)より圧倒的に汎用性が高い。",tags:["無敵","対空"]},
         {id:"を",name:"SA3 パ・ド・ドゥ",      command:"236236+P",  type:"special",startup:7, active:2,damage:4000,guard:null,hit:"Down",cancel:false,reach:0,isReplaceable:true,note:"暗転を見てからジャンプ回避可能。コンボ制限も多く、実戦評価は極めて低い。",tags:["投げSA","暗転回避可"]},
         // ===== システム技（NEW）=====
         {id:"ど",name:"ドライブインパクト",command:"強P+強K",      type:"system",startup:20,active:5,damage:2000,guard:-8, hit:"壁張付",cancel:false,reach:3,note:"壁張り付き・パニカン始動の強行動。相手のDIで相殺可。コンボはパニカン時のみ。",tags:["システム","壁張付","パニカン始動"]},
@@ -504,7 +504,7 @@
                     recipe:"立中P → CR → 屈中P → アン・オー → 中ランヴェルセ",
                     damage:{1:2900,2:3050,3:3200,4:3400,5:3700},
                     difficulty:2, condition:"地上ヒット確認後",
-                    note:"ガードさせたら強マネ択。立中K・屈中K始動でも代替可。マノン最頻出コンボ。",
+                    note:"ガードさせたら強マネ(よ)択。立中K(し)・屈中K(そ)始動でも代替可。マノン最頻出コンボ。",
                     medalGain:1
                 },
                 {
@@ -536,7 +536,7 @@
                     recipe:"立中P → CR → 屈中P → アン・オー → 強ランヴェルセ",
                     damage:{1:3200,2:3400,3:3600,4:3800,5:4200},
                     difficulty:2, condition:"ヒット確認後（メダル優先時）",
-                    note:"基本コンボより高ダメ。Lv5到達後はコマ投げ択に移行するかの判断も重要。",
+                    note:"基本コンボより高ダメ。Lv5到達後はコマ投げ(よ)択に移行するかの判断も重要。",
                     medalGain:1
                 },
                 {
@@ -554,7 +554,7 @@
                     recipe:"アン・オー → ODランヴェルセ → アン・オー → 強ロンポワン → 弱ランヴェルセ",
                     damage:{1:2800,2:3000,3:3200,4:3400,5:3700},
                     difficulty:2, condition:"アン・オーヒット後",
-                    note:"ODランヴェルセの火力上昇＋ゲージ回収が強力。メダルを2段階一気に稼ぐ。",
+                    note:"ODランヴェルセ(り)の火力上昇＋ゲージ回収が強力。メダルを2段階一気に稼ぐ。",
                     medalGain:2
                 },
             ]
