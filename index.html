@@ -288,6 +288,9 @@
         }
         .legend-badge.sys { background-color: var(--system-teal); }
         .legend-name { font-size: 0.65rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .legend-item.with-cmd { flex-direction: column; align-items: flex-start; gap: 3px; height: auto; }
+        .legend-item.with-cmd .legend-row { display: flex; align-items: center; gap: 4px; width: 100%; }
+        .legend-cmd { font-size: 0.57rem; color: #666; font-family: 'Courier New', monospace; padding-left: 2px; }
 
         @keyframes fadeInUp { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
         .animate-fade { opacity:0; animation:fadeInUp 0.3s ease-out forwards; }
@@ -327,7 +330,7 @@
                 <span><strong>P:</strong> あ〜け</span>
                 <span><strong>K:</strong> さ〜て</span>
                 <span><strong>必:</strong> な〜よ</span>
-                <span><strong>他:</strong> へ〜を</span>
+                <span><strong>他:</strong> ね/ぴ/へ/ほ〜を</span>
                 <span class="sys-hint"><strong>SYS:</strong> ど・ば</span>
             </div>
             <select class="sort-select" id="sort-select">
@@ -406,11 +409,33 @@
                     <div class="legend-item"><div class="legend-badge" style="background:var(--manon-gold)">よ</div><div class="legend-name">マネ強</div></div>
                 </div>
             </div>
+            <!-- 特殊技（独立セクション・コマンド付き） -->
             <div class="legend-section">
-                <h3 class="legend-section-title">■ 特殊・OD・SA (へ〜を)</h3>
+                <h3 class="legend-section-title">■ 特殊技 (ね・ぴ・へ・ほ) ※コマンド付き</h3>
                 <div class="legend-grid">
-                    <div class="legend-item"><div class="legend-badge" style="background:var(--manon-gold)">へ</div><div class="legend-name">アンオー</div></div>
-                    <div class="legend-item"><div class="legend-badge">ほ</div><div class="legend-name">アラベス</div></div>
+                    <div class="legend-item with-cmd">
+                        <div class="legend-row"><div class="legend-badge">ね</div><div class="legend-name">タゲコン</div></div>
+                        <div class="legend-cmd">5MP → 5MK</div>
+                    </div>
+                    <div class="legend-item with-cmd">
+                        <div class="legend-row"><div class="legend-badge" style="background:var(--manon-gold)">ぴ</div><div class="legend-name">レベランス</div></div>
+                        <div class="legend-cmd">5HP ~ HP（派生）</div>
+                    </div>
+                    <div class="legend-item with-cmd">
+                        <div class="legend-row"><div class="legend-badge" style="background:var(--manon-gold)">へ</div><div class="legend-name">アン・オー</div></div>
+                        <div class="legend-cmd">← + 強P（4HP）</div>
+                    </div>
+                    <div class="legend-item with-cmd">
+                        <div class="legend-row"><div class="legend-badge">ほ</div><div class="legend-name">アラベスク</div></div>
+                        <div class="legend-cmd">→ + 中K（6MK）</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OD・SA -->
+            <div class="legend-section">
+                <h3 class="legend-section-title">■ OD・SA (ら〜を)</h3>
+                <div class="legend-grid">
                     <div class="legend-item"><div class="legend-badge">ら</div><div class="legend-name">ODマネ</div></div>
                     <div class="legend-item"><div class="legend-badge">り</div><div class="legend-name">ODラン</div></div>
                     <div class="legend-item"><div class="legend-badge">る</div><div class="legend-name">ODデガ</div></div>
@@ -418,6 +443,8 @@
                     <div class="legend-item"><div class="legend-badge">ろ</div><div class="legend-name">SA1</div></div>
                     <div class="legend-item"><div class="legend-badge" style="background:var(--manon-gold)">わ</div><div class="legend-name">SA2</div></div>
                     <div class="legend-item"><div class="legend-badge">を</div><div class="legend-name">SA3</div></div>
+                    <div class="legend-item empty"></div>
+                    <div class="legend-item empty"></div>
                 </div>
             </div>
             <!-- システム技セクション（NEW） -->
@@ -447,45 +474,47 @@
     // 技データ
     // ============================================================
     const manonMoves = [
-        {id:"あ",name:"立ち弱P",    command:"5LP",       type:"normal",  startup:5,  active:3,damage:300, guard:-2, hit:4,    cancel:true, reach:0,tags:["上段"]},
-        {id:"い",name:"立ち中P",    command:"5MP",       type:"normal",  startup:7,  active:3,damage:600, guard:-1, hit:5,    cancel:true, reach:1,isCore:true,note:"ヒット確認が容易でタゲコンにも繋がる万能技。",tags:["上段"]},
-        {id:"う",name:"立ち強P",    command:"5HP",       type:"normal",  startup:10, active:3,damage:800, guard:-3, hit:3,    cancel:true, reach:2,isCore:true,note:"中距離の主軸。引き寄せ効果がコマ投げ(よ)と絶大な相性。",tags:["上段","引き寄せ"]},
-        {id:"え",name:"しゃがみ弱P",command:"2LP",       type:"normal",  startup:4,  active:3,damage:200, guard:-2, hit:4,    cancel:true, reach:0,tags:["最速","連打可"]},
-        {id:"お",name:"しゃがみ中P",command:"2MP",       type:"normal",  startup:6,  active:3,damage:600, guard:1,  hit:5,    cancel:true, reach:1,isCore:true,note:"マノンの心臓。ガードさせて有利な唯一無二の起点。",tags:["上段","固め"]},
-        {id:"か",name:"しゃがみ強P",command:"2HP",       type:"normal",  startup:11, active:3,damage:800, guard:-8, hit:"Down",cancel:false,reach:2,tags:["上段","対空"]},
-        {id:"き",name:"ジャンプ弱P",command:"JLP",       type:"normal",  startup:4,  active:3,damage:300, guard:2,  hit:6,    cancel:false,reach:1,tags:["空中"]},
-        {id:"く",name:"ジャンプ中P",command:"JMP",       type:"normal",  startup:7,  active:3,damage:600, guard:4,  hit:8,    cancel:false,reach:1,tags:["空中"]},
-        {id:"け",name:"ジャンプ強P",command:"JHP",       type:"normal",  startup:10, active:3,damage:800, guard:6,  hit:12,   cancel:false,reach:2,tags:["空中"]},
-        {id:"さ",name:"立ち弱K",    command:"5LK",       type:"normal",  startup:5,  active:3,damage:300, guard:-1, hit:3,    cancel:false,reach:0,tags:["上段"]},
-        {id:"し",name:"立ち中K",    command:"5MK",       type:"normal",  startup:9,  active:3,damage:600, guard:-5, hit:-1,   cancel:false,reach:2,isReplaceable:true,note:"キャンセル不可でガード確反あり。5HP(う)や2MK(そ)で代用可能。",tags:["上段","牽制"]},
-        {id:"す",name:"立ち強K",    command:"5HK",       type:"normal",  startup:14, active:3,damage:800, guard:-3, hit:1,    cancel:false,reach:3,tags:["上段","牽制"]},
-        {id:"せ",name:"しゃがみ弱K",command:"2LK",       type:"normal",  startup:5,  active:2,damage:200, guard:-2, hit:2,    cancel:false,reach:0,tags:["下段"]},
-        {id:"そ",name:"しゃがみ中K",command:"2MK",       type:"normal",  startup:8,  active:3,damage:500, guard:-4, hit:1,    cancel:false,reach:2,tags:["下段"]},
-        {id:"た",name:"しゃがみ強K",command:"2HK",       type:"normal",  startup:10, active:3,damage:800, guard:-10,hit:"Down",cancel:false,reach:2,tags:["下段","大足"]},
-        {id:"ち",name:"ジャンプ弱K",command:"JLK",       type:"normal",  startup:5,  active:4,damage:300, guard:2,  hit:6,    cancel:false,reach:1,tags:["空中"]},
-        {id:"つ",name:"ジャンプ中K",command:"JMK",       type:"normal",  startup:8,  active:5,damage:500, guard:3,  hit:7,    cancel:false,reach:1,tags:["空中","めくり"]},
-        {id:"て",name:"ジャンプ強K",command:"JHK",       type:"normal",  startup:12, active:3,damage:800, guard:6,  hit:12,   cancel:false,reach:2,tags:["空中"]},
-        {id:"な",name:"ロン・ポワン(弱)",      command:"236+弱K",  type:"special",startup:14,active:3,damage:800, guard:-8, hit:"Down",cancel:false,reach:2,tags:["対空"]},
-        {id:"に",name:"ロン・ポワン(中)",      command:"236+中K",  type:"special",startup:16,active:3,damage:1000,guard:-10,hit:"Down",cancel:false,reach:2,tags:["対空","コンボ"]},
-        {id:"ぬ",name:"ロン・ポワン(強)",      command:"236+強K",  type:"special",startup:18,active:3,damage:1200,guard:-12,hit:"Down",cancel:false,reach:2,tags:["対空","コンボ"]},
-        {id:"は",name:"デガジェ(弱)",          command:"214+弱K",  type:"special",startup:16,active:3,damage:700, guard:-8, hit:"Down",cancel:false,reach:2,tags:["下段"]},
-        {id:"ひ",name:"デガジェ(中)",          command:"214+中K",  type:"special",startup:18,active:3,damage:800, guard:-6, hit:"Down",cancel:false,reach:2,tags:["中段"]},
-        {id:"ふ",name:"デガジェ(強)",          command:"214+強K",  type:"special",startup:22,active:3,damage:1000,guard:-4, hit:"Down",cancel:false,reach:2,tags:["中段","コンボ"]},
-        {id:"ま",name:"ランヴェルセ(弱)",      command:"214+弱P",  type:"special",startup:16,active:4,damage:1400,guard:-10,hit:"Down",cancel:false,reach:1,tags:["打撃投げ","メダル用"]},
-        {id:"み",name:"ランヴェルセ(中)",      command:"214+中P",  type:"special",startup:18,active:4,damage:1700,guard:-10,hit:"Down",cancel:false,reach:1,tags:["打撃投げ","メダル用"]},
-        {id:"む",name:"ランヴェルセ(強)",      command:"214+強P",  type:"special",startup:20,active:4,damage:2000,guard:-10,hit:"Down",cancel:false,reach:1,isCore:true,note:"コンボ締め・対空でメダルを稼ぐための最重要技。",tags:["打撃投げ","メダル用"]},
-        {id:"や",name:"マネージュ・ドレ(弱)",  command:"半回転+弱P",type:"special",startup:5, active:2,damage:2000,guard:null,hit:"Down",cancel:false,reach:2,tags:["コマ投げ","ガード不可"]},
-        {id:"ゆ",name:"マネージュ・ドレ(中)",  command:"半回転+中P",type:"special",startup:5, active:2,damage:2300,guard:null,hit:"Down",cancel:false,reach:1,tags:["コマ投げ","ガード不可"]},
-        {id:"よ",name:"マネージュ・ドレ(強)",  command:"半回転+強P",type:"special",startup:5, active:2,damage:2700,guard:null,hit:"Down",cancel:false,reach:0,isCore:true,note:"マノンの象徴。メダルLvに応じた破壊力は最強クラス。",tags:["コマ投げ","ガード不可"]},
-        {id:"へ",name:"アン・オー",            command:"4HP",       type:"unique", startup:12,active:4,damage:800, guard:-4, hit:"Down",cancel:true, reach:1,isCore:true,note:"対空・コンボの要。メダル獲得への重要ルート。",tags:["対空","コンボ"]},
+        {id:"あ",name:"立ち弱P（ハジメ）",   command:"5LP",  type:"normal", startup:4,  active:3, damage:300, guard:-1,  hit:4,     cancel:true,  reach:0, tags:["上段","連打可"]},
+        {id:"い",name:"立ち中P（ツリテ）",   command:"5MP",  type:"normal", startup:7,  active:4, damage:600, guard:-2,  hit:2,     cancel:true,  reach:1, isCore:true, note:"CR(ば)絡みコンボ始動の主役。ヒット+2Fでレベランス(ぴ)確定。",tags:["上段"]},
+        {id:"う",name:"立ち強P（ランドリ）", command:"5HP",  type:"normal", startup:10, active:4, damage:800, guard:-3,  hit:0,     cancel:false, reach:2, isCore:true, note:"SAキャンセル可。空中ヒット時吹き飛びダウン。コマ投げ(よ)と絶大な相性。",tags:["上段","引き寄せ"]},
+        {id:"え",name:"しゃがみ弱P（ソデキリ）",command:"2LP",type:"normal",startup:4, active:2, damage:300, guard:-2,  hit:3,     cancel:true,  reach:0, tags:["上段","連打可"]},
+        {id:"お",name:"しゃがみ中P（ヒキテ）", command:"2MP", type:"normal",startup:7, active:3, damage:600, guard:-1,  hit:6,     cancel:true,  reach:1, isCore:true, note:"ヒット+6Fでレベランス(ぴ)が確定。ガード-1FはCR(ば)で読み合いへ。空振り時硬直+4F注意。",tags:["上段","固め"]},
+        {id:"か",name:"しゃがみ強P（ヴィクトワール）",command:"2HP",type:"normal",startup:10,active:5,damage:600, guard:-8,  hit:-2,    cancel:false, reach:2, tags:["上段","対空"]},
+        {id:"き",name:"ジャンプ弱P（シエル・クーデ）", command:"JLP",type:"normal",startup:5, active:10,damage:300,guard:"J",  hit:"J",   cancel:false, reach:1, tags:["空中"]},
+        {id:"く",name:"ジャンプ中P（クロワゼ・ドゥヴァン）",command:"JMP",type:"normal",startup:8,active:4,damage:700,guard:"J",  hit:"J",   cancel:false, reach:1, tags:["空中","吹き飛び"]},
+        {id:"け",name:"ジャンプ強P（グロワール・ポーム）", command:"JHP",type:"normal",startup:9,active:4, damage:800, guard:"J",  hit:"J",   cancel:false, reach:2, tags:["空中","叩きつけ"]},
+        {id:"さ",name:"立ち弱K（タンジュ）",  command:"5LK",  type:"normal", startup:5,  active:2, damage:300, guard:-2,  hit:2,     cancel:true,  reach:0, tags:["上段"]},
+        {id:"し",name:"立ち中K（ラ・シェーヌ）",command:"5MK",type:"normal",startup:10, active:3, damage:600, guard:-5,  hit:-2,    cancel:true,  reach:2, isReplaceable:true, note:"ガード-5Fで確反リスクあり。5HP(う)や2MK(そ)で代用可。",tags:["上段","牽制"]},
+        {id:"す",name:"立ち強K（ピエ・ドンジュ）",command:"5HK",type:"normal",startup:15,active:3, damage:900, guard:-6,  hit:null,  cancel:false, reach:3, note:"地上パニカン時+17F。パニカン確認後追撃可能。",tags:["上段","牽制","パニカン始動"]},
+        {id:"せ",name:"しゃがみ弱K（シーニュ・ナジェ）",command:"2LK",type:"normal",startup:5,active:2,damage:200, guard:-3,  hit:-1,    cancel:false, reach:0, tags:["下段","連打可"]},
+        {id:"そ",name:"しゃがみ中K（ストゥニュー）",command:"2MK",type:"normal",startup:8,active:4, damage:600, guard:-2,  hit:3,     cancel:false, reach:2, tags:["下段"]},
+        {id:"た",name:"しゃがみ強K（クロワゼ）",command:"2HK",type:"normal", startup:11, active:2, damage:900, guard:-12, hit:"Down",cancel:false, reach:2, tags:["下段","大足","パニカン時ハードノックダウン"]},
+        {id:"ち",name:"ジャンプ弱K（シエル・パッセ）",command:"JLK",type:"normal",startup:6,active:9,damage:300, guard:"J",  hit:"J",   cancel:false, reach:1, tags:["空中","めくり"]},
+        {id:"つ",name:"ジャンプ中K（アレグロ）",command:"JMK",type:"normal", startup:7,  active:6, damage:500, guard:"J",  hit:"J",   cancel:false, reach:1, tags:["空中","めくり"]},
+        {id:"て",name:"ジャンプ強K（カブリオール）",command:"JHK",type:"normal",startup:11,active:5,damage:800, guard:"J",  hit:"J",   cancel:false, reach:2, tags:["空中"]},
+        {id:"な",name:"ロン・ポワン(弱)",  command:"236+弱K", type:"special",startup:9,  active:7, damage:900, guard:-15, hit:3,     cancel:false, reach:2, tags:["対空","上半身無敵"]},
+        {id:"に",name:"ロン・ポワン(中)",  command:"236+中K", type:"special",startup:11, active:9, damage:1000,guard:-14, hit:"Down",cancel:false, reach:2, tags:["対空","コンボ","上半身無敵"]},
+        {id:"ぬ",name:"ロン・ポワン(強)",  command:"236+強K", type:"special",startup:14, active:9, damage:800, guard:-11, hit:"Down",cancel:false, reach:2, tags:["対空","コンボ","上半身無敵"]},
+        {id:"は",name:"デガジェ(弱)",       command:"214+弱K", type:"special",startup:16, active:16,damage:1000,guard:-24, hit:"Down",cancel:false, reach:2, tags:["下段"]},
+        {id:"ひ",name:"デガジェ(中)",       command:"214+中K", type:"special",startup:16, active:24,damage:1200,guard:-13, hit:"Down",cancel:false, reach:2, note:"15〜39F空中判定。",tags:["上段","コンボ","空中判定"]},
+        {id:"ふ",name:"デガジェ(強)",       command:"214+強K", type:"special",startup:20, active:3, damage:1000,guard:-9,  hit:3,     cancel:false, reach:2, tags:["中段","コンボ","足元無敵"]},
+        {id:"ま",name:"ランヴェルセ(弱)",   command:"214+弱P", type:"special",startup:22, active:2, damage:1350,guard:-23, hit:"Down",cancel:false, reach:1, tags:["打撃投げ","メダル用","飛び道具無敵"]},
+        {id:"み",name:"ランヴェルセ(中)",   command:"214+中P", type:"special",startup:25, active:2, damage:1400,guard:-20, hit:"Down",cancel:false, reach:1, tags:["打撃投げ","メダル用","飛び道具無敵"]},
+        {id:"む",name:"ランヴェルセ(強)",   command:"214+強P", type:"special",startup:29, active:2, damage:1500,guard:-16, hit:"Down",cancel:false, reach:1, isCore:true, note:"コンボ締め・対空でメダルを稼ぐための最重要技。飛び道具無敵あり。",tags:["打撃投げ","メダル用","飛び道具無敵"]},
+        {id:"や",name:"マネージュ・ドレ(弱)",command:"半回転+弱P",type:"special",startup:10,active:2,damage:2000,guard:null,hit:"Down",cancel:false,reach:2,tags:["コマ投げ","ガード不可"]},
+        {id:"ゆ",name:"マネージュ・ドレ(中)",command:"半回転+中P",type:"special",startup:8, active:2,damage:2000,guard:null,hit:"Down",cancel:false,reach:1,tags:["コマ投げ","ガード不可"]},
+        {id:"よ",name:"マネージュ・ドレ(強)",command:"半回転+強P",type:"special",startup:5, active:2,damage:2000,guard:null,hit:"Down",cancel:false,reach:0,isCore:true,note:"弱/中/強いずれもメダルLv別ダメージは同値。最速5Fで近距離最強択。",tags:["コマ投げ","ガード不可"]},
+        {id:"ね",name:"タゲコン 立中P→立中K",command:"5MP→5MK",  type:"unique", startup:9,  active:3,damage:1000,guard:-2, hit:2,    cancel:false,reach:2, note:"ゲージ不要の二択起点。+2有利からコマ投げ(よ)か打撃の択。CR不要でゲージ節約できるため立ち回りで重宝。",tags:["上段","ターゲットコンボ"]},
+        {id:"ぴ",name:"レベランス",               command:"5HP~HP",    type:"unique", startup:8,  active:6, damage:800, guard:1,   hit:3,     cancel:true, reach:2,isCore:true,note:"ガード+1Fで有利確保。コンボ中継の主役。屈中P(お)+3F有利からの8F発生で確実につながる。空中ヒット時吹き飛びダウン。",tags:["上段","コンボ中継","ガード有利"]},
+        {id:"へ",name:"アン・オー（2段）",          command:"4HP(2段)",  type:"unique", startup:10, active:4, damage:1100,guard:-11, hit:-4,    cancel:true, reach:1,isCore:true,note:"1段目(上段・発生10F)→2段目(中段・発生14F)の2択構造。oki重ねで機能。2段目キャンセル可。レベランス(ぴ)とは別技。",tags:["上段","中段","oki重ね","2段技"]},
         {id:"ほ",name:"アラベスク",            command:"6MK",       type:"unique", startup:13,active:2,damage:600, guard:-4, hit:2,    cancel:false,reach:2,isReplaceable:true,note:"発生が遅くリスクが高い。ラッシュ以外では不要。",tags:["中段"]},
-        {id:"ら",name:"OD マネージュ・ドレ",   command:"半回転+PP", type:"special",startup:5, active:2,damage:3300,guard:null,hit:"Down",cancel:false,reach:1,tags:["コマ投げ","OD"]},
-        {id:"り",name:"OD ランヴェルセ",       command:"214+PP",    type:"special",startup:16,active:4,damage:2200,guard:-10,hit:"Down",cancel:false,reach:2,tags:["打撃投げ","アーマー","OD"]},
-        {id:"る",name:"OD デガジェ",           command:"214+KK",    type:"special",startup:16,active:3,damage:1200,guard:-3, hit:"Down",cancel:false,reach:2,tags:["下段","OD"]},
-        {id:"れ",name:"OD ロン・ポワン",       command:"236+KK",    type:"special",startup:8, active:6,damage:1200,guard:-15,hit:"Down",cancel:false,reach:2,tags:["完全無敵","OD"]},
-        {id:"ろ",name:"SA1 アラベスク・ドゥ",  command:"236236+K",  type:"special",startup:10,active:3,damage:2000,guard:-32,hit:"Down",cancel:false,reach:2,tags:["無敵","SA"]},
-        {id:"わ",name:"SA2 エトワール",        command:"214214+P",  type:"special",startup:13,active:9,damage:2800,guard:-21,hit:"Down",cancel:false,reach:1,isCore:true,note:"完全無敵。対空・切り返し・コンボとSA3(を)より圧倒的に汎用性が高い。",tags:["無敵","対空"]},
-        {id:"を",name:"SA3 パ・ド・ドゥ",      command:"236236+P",  type:"special",startup:7, active:2,damage:4000,guard:null,hit:"Down",cancel:false,reach:0,isReplaceable:true,note:"暗転を見てからジャンプ回避可能。コンボ制限も多く、実戦評価は極めて低い。",tags:["投げSA","暗転回避可"]},
+        {id:"ら",name:"OD マネージュ・ドレ", command:"半回転+PP", type:"special",startup:8,  active:2, damage:2000,guard:null,hit:"Down",cancel:false,reach:1,tags:["コマ投げ","OD"]},
+        {id:"り",name:"OD ランヴェルセ",     command:"214+PP",    type:"special",startup:25, active:2, damage:1500,guard:-20, hit:"Down",cancel:false,reach:2,tags:["打撃投げ","上半身無敵","飛び道具無敵","OD"]},
+        {id:"る",name:"OD デガジェ",         command:"214+KK",    type:"special",startup:22, active:3, damage:800, guard:-3,  hit:6,     cancel:false,reach:2,tags:["中段","足元無敵","OD"]},
+        {id:"れ",name:"OD ロン・ポワン",     command:"236+KK",    type:"special",startup:8,  active:9, damage:800, guard:-19, hit:"Down",cancel:false,reach:2,tags:["完全無敵","OD"]},
+        {id:"ろ",name:"SA1 アラベスク・ドゥ",command:"236236+K",  type:"special",startup:10, active:4, damage:2000,guard:-49, hit:"Down",cancel:false,reach:2,tags:["完全無敵","SA","位置入替"]},
+        {id:"わ",name:"SA2 エトワール",      command:"214214+P",  type:"special",startup:7,  active:9, damage:2800,guard:-61, hit:"Down",cancel:false,reach:1,isCore:true,note:"完全無敵(1〜9F)。対空・切り返し・コンボ締めとSA3(を)より圧倒的に汎用性が高い。",tags:["完全無敵","対空","SA"]},
+        {id:"を",name:"SA3 パ・ド・ドゥ",    command:"236236+P",  type:"special",startup:7,  active:2, damage:4000,guard:null,hit:"Down",cancel:false,reach:0,isReplaceable:true,note:"暗転を見てからジャンプ回避可能。メダルLvでダメージ上昇(Lv5:4600)。実戦評価は極めて低い。",tags:["投げSA","暗転回避可","メダル"]},
         // ===== システム技（NEW）=====
         {id:"ど",name:"ドライブインパクト",command:"強P+強K",      type:"system",startup:20,active:5,damage:2000,guard:-8, hit:"壁張付",cancel:false,reach:3,note:"壁張り付き・パニカン始動の強行動。相手のDIで相殺可。コンボはパニカン時のみ。",tags:["システム","壁張付","パニカン始動"]},
         {id:"ば",name:"キャンセルラッシュ",command:"パリィ中に66", type:"system",startup:null,active:null,damage:0,guard:null,hit:null,cancel:false,reach:0,note:"Dゲージ3本消費。ヒット/ガード問わず発動可。マノンのコンボ中継主軸技。",tags:["システム","Dゲージ3本","中継"]},
@@ -500,8 +529,8 @@
             combos:[
                 {
                     name:"CR基本（必須中の必須）",
-                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"へ"},{t:"m",id:"み"}],
-                    recipe:"立中P → CR → 屈中P → アン・オー → 中ランヴェルセ",
+                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"ぴ"},{t:"m",id:"み"}],
+                    recipe:"立中P → CR → 屈中P → レベランス → 中ランヴェルセ",
                     damage:{1:2900,2:3050,3:3200,4:3400,5:3700},
                     difficulty:2, condition:"地上ヒット確認後",
                     note:"ガードさせたら強マネ(よ)択。立中K(し)・屈中K(そ)始動でも代替可。マノン最頻出コンボ。",
@@ -532,8 +561,8 @@
             combos:[
                 {
                     name:"CR強ランヴェルセ締め",
-                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"へ"},{t:"m",id:"む"}],
-                    recipe:"立中P → CR → 屈中P → アン・オー → 強ランヴェルセ",
+                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"ぴ"},{t:"m",id:"む"}],
+                    recipe:"立中P → CR → 屈中P → レベランス → 強ランヴェルセ",
                     damage:{1:3200,2:3400,3:3600,4:3800,5:4200},
                     difficulty:2, condition:"ヒット確認後（メダル優先時）",
                     note:"基本コンボより高ダメ。Lv5到達後はコマ投げ(よ)択に移行するかの判断も重要。",
@@ -541,19 +570,19 @@
                 },
                 {
                     name:"DIパニカン始動",
-                    steps:[{t:"m",id:"ど"},{t:"a",label:"前ステ"},{t:"m",id:"へ"},{t:"m",id:"れ"},{t:"m",id:"み"}],
-                    recipe:"DI(パニカン) → 前ステ → アン・オー → ODロンポワン → 中ランヴェルセ",
+                    steps:[{t:"m",id:"ど"},{t:"a",label:"前ステ"},{t:"m",id:"ぴ"},{t:"m",id:"れ"},{t:"m",id:"み"}],
+                    recipe:"DI(パニカン) → 前ステ → レベランス → ODロンポワン → 中ランヴェルセ",
                     damage:{1:3000,2:3200,3:3400,4:3600,5:3900},
                     difficulty:3, condition:"DIパニッシュカウンター時",
                     note:"前ステでタイミングを作るのが鍵。壁ドン後も同ルートで対応可。",
                     medalGain:1
                 },
                 {
-                    name:"アンオー始動 コスパ最強",
-                    steps:[{t:"m",id:"へ"},{t:"m",id:"り"},{t:"m",id:"へ"},{t:"m",id:"ぬ"},{t:"m",id:"ま"}],
-                    recipe:"アン・オー → ODランヴェルセ → アン・オー → 強ロンポワン → 弱ランヴェルセ",
+                    name:"レベランス始動 コスパ最強",
+                    steps:[{t:"m",id:"ぴ"},{t:"m",id:"り"},{t:"m",id:"ぴ"},{t:"m",id:"ぬ"},{t:"m",id:"ま"}],
+                    recipe:"レベランス → ODランヴェルセ → レベランス → 強ロンポワン → 弱ランヴェルセ",
                     damage:{1:2800,2:3000,3:3200,4:3400,5:3700},
-                    difficulty:2, condition:"アン・オーヒット後",
+                    difficulty:2, condition:"レベランスヒット後",
                     note:"ODランヴェルセ(り)の火力上昇＋ゲージ回収が強力。メダルを2段階一気に稼ぐ。",
                     medalGain:2
                 },
@@ -564,8 +593,8 @@
             combos:[
                 {
                     name:"CR→SA2締め",
-                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"へ"},{t:"m",id:"わ"}],
-                    recipe:"立中P → CR → 屈中P → アン・オー → SA2",
+                    steps:[{t:"m",id:"い"},{t:"m",id:"ば"},{t:"m",id:"お"},{t:"m",id:"ぴ"},{t:"m",id:"わ"}],
+                    recipe:"立中P → CR → 屈中P → レベランス → SA2",
                     damage:{1:4100,2:4300,3:4500,4:4700,5:5000},
                     difficulty:2, condition:"SA2ゲージあり・ヒット確認後",
                     note:"完全無敵フィニッシャー。ゲージが溜まったら積極的に狙う最強の締め技。",
@@ -573,8 +602,8 @@
                 },
                 {
                     name:"J強K→SA2フィニッシャー",
-                    steps:[{t:"m",id:"て"},{t:"m",id:"へ"},{t:"m",id:"ひ"},{t:"m",id:"わ"}],
-                    recipe:"J強K → アン・オー → 中デガジェ → SA2",
+                    steps:[{t:"m",id:"て"},{t:"m",id:"ぴ"},{t:"m",id:"ひ"},{t:"m",id:"わ"}],
+                    recipe:"J強K → レベランス → 中デガジェ → SA2",
                     damage:{1:3800,2:4000,3:4200,4:4400,5:4700},
                     difficulty:3, condition:"近距離J強K始動・SA2ゲージあり",
                     note:"高火力フィニッシャー。めくり非対応なので位置確認必須。",
@@ -649,7 +678,7 @@
         container.innerHTML = '';
         movesToRender.forEach((move, index) => {
             const isGod = move.isCore, isWeak = move.isReplaceable, isSys = move.type === 'system';
-            const getGuardClass = v => (v===null||v===undefined||v>=0)?'value-safe':(v<=-4?'value-danger':'');
+            const getGuardClass = v => (v===null||v===undefined||v==="J"||v>=0)?'value-safe':(v<=-4?'value-danger':'');
 
             let tagsHtml = move.tags.map(t => `<span class="tag${t==='システム'?' sys':''}">${t}</span>`).join('');
             if (isSys)       tagsHtml = `<span class="tag sys">⚙ システム技</span>` + tagsHtml;
@@ -657,7 +686,8 @@
             else if (isWeak) tagsHtml = `<span class="tag warning">⚠ 代用あり</span>` + tagsHtml;
 
             const dmgTxt   = (isSys && move.damage===0) ? '—' : move.damage;
-            const grdTxt   = (move.guard===null||move.guard===undefined) ? '不可'
+            const grdTxt   = move.guard==="J"  ? '着地3F'
+                           : (move.guard===null||move.guard===undefined) ? '不可'
                            : (move.startup===null ? '—' : (move.guard>0?'+':'')+move.guard+'F');
             const stTxt    = move.startup===null ? '—' : move.startup+'F';
             const scoreTxt = isSys ? `<span class="skill-score sys-score">SYSTEM</span>`
@@ -752,14 +782,14 @@
     function updateDisplay() {
         manonMoves.forEach(m => {
             if (m.name.includes("マネージュ・ドレ")) {
-                if(m.id==="や") m.damage={1:2000,2:2300,3:2700,4:3000,5:3700}[currentMedalLevel];
-                if(m.id==="ゆ") m.damage={1:2300,2:2600,3:3000,4:3300,5:4000}[currentMedalLevel];
-                if(m.id==="よ") m.damage={1:2700,2:3000,3:3400,4:3700,5:4500}[currentMedalLevel];
-            } else if (m.name.includes("ランヴェルセ")) {
-                if(m.id==="ま") m.damage={1:1400,2:1600,3:1800,4:2000,5:2200}[currentMedalLevel];
-                if(m.id==="み") m.damage={1:1700,2:1900,3:2100,4:2300,5:2500}[currentMedalLevel];
-                if(m.id==="む") m.damage={1:2000,2:2200,3:2400,4:2600,5:2800}[currentMedalLevel];
-            }
+                // 弱/中/強/ODすべて同じダメージスケール（公式確認済み）
+                const maneDmg = {1:2000,2:2300,3:2700,4:3000,5:3700}[currentMedalLevel];
+                m.damage = maneDmg;
+            } else if (m.id==="ま") { m.damage = {1:1350,2:1500,3:1650,4:1800,5:1950}[currentMedalLevel]; }
+            else if (m.id==="み") { m.damage = {1:1400,2:1550,3:1700,4:1850,5:2000}[currentMedalLevel]; }
+            else if (m.id==="む") { m.damage = {1:1500,2:1650,3:1800,4:1950,5:2100}[currentMedalLevel]; }
+            else if (m.id==="り") { m.damage = {1:1500,2:1650,3:1800,4:1950,5:2100}[currentMedalLevel]; }
+            else if (m.id==="を") { m.damage = {1:4000,2:4100,3:4200,4:4400,5:4600}[currentMedalLevel]; }
             m.score = calculateScore(m);
         });
         let filtered = manonMoves.filter(m => {
