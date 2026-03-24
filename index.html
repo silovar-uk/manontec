@@ -4,53 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>マノン - 実戦ポテンシャル分析ツール</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap">
     <style>
         :root {
-            --bg-color: #0a0a0a;
-            --card-bg: #161616;
-            --text-main: #f0f0f0;
-            --text-sub: #999;
-            --manon-pink: #e8a0bf;
-            --manon-gold: #d4af37;
-            --safe-blue: #4fc3f7;
-            --danger-red: #ff5252;
-            --god-glow: rgba(212, 175, 55, 0.5);
-            --system-teal: #26c6da;
-            --system-glow: rgba(38, 198, 218, 0.35);
+            /* ── Color Primitives ── */
+            --pink-200: #f2c4d8;
+            --pink-400: #e8a0bf;
+            --pink-600: #c4607a;
+            --gold-200: #ead98a;
+            --gold-400: #d4af37;
+            --gold-600: #a07d1a;
+            --teal-200: #80e4ef;
+            --teal-400: #26c6da;
+            --teal-600: #0e8fa0;
+            --neutral-0:   #f4f0ea;
+            --neutral-100: #c8c3b8;
+            --neutral-400: #6b6660;
+            --neutral-700: #2a2724;
+            --neutral-800: #1a1816;
+            --neutral-900: #0d0c0a;
+            --blue-400:  #4fc3f7;
+            --red-400:   #ff5252;
+
+            /* ── Semantic Color Aliases ── */
+            --color-bg:          var(--neutral-900);
+            --color-surface:     var(--neutral-800);
+            --color-surface-alt: var(--neutral-700);
+            --color-text-primary:   var(--neutral-0);
+            --color-text-secondary: var(--neutral-100);
+            --color-text-muted:     var(--neutral-400);
+            --color-accent:      var(--pink-400);
+            --color-accent-sub:  var(--pink-600);
+            --color-tier-god:    var(--gold-400);
+            --color-tier-god-glow:    rgba(212, 175, 55, 0.45);
+            --color-tier-system: var(--teal-400);
+            --color-tier-system-glow: rgba(38, 198, 218, 0.30);
+            --color-safe:   var(--blue-400);
+            --color-danger: var(--red-400);
+
+            /* ── Typography Scale ── */
+            --font-serif: 'Cormorant Garamond', 'Georgia', 'Hiragino Mincho ProN', serif;
+            --font-sans:  'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            --font-mono:  'Courier New', 'Menlo', monospace;
+            --text-xs:   0.65rem;
+            --text-sm:   0.75rem;
+            --text-base: 0.875rem;
+            --text-md:   1rem;
+            --text-lg:   1.2rem;
+            --text-xl:   1.6rem;
+
+            /* ── Spacing Scale (base: 4px) ── */
+            --space-1:  4px;
+            --space-2:  8px;
+            --space-3:  12px;
+            --space-4:  16px;
+            --space-5:  20px;
+            --space-6:  24px;
+            --space-8:  32px;
+            --space-10: 40px;
+
+            /* ── Motion Tokens ── */
+            --duration-fast:   120ms;
+            --duration-base:   220ms;
+            --duration-slow:   400ms;
+            --ease-out:        cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            /* ── Legacy Aliases（既存コードとの互換性維持） ── */
+            --bg-color:    var(--color-bg);
+            --card-bg:     var(--color-surface);
+            --text-main:   var(--color-text-primary);
+            --text-sub:    var(--color-text-secondary);
+            --manon-pink:  var(--color-accent);
+            --manon-gold:  var(--color-tier-god);
+            --safe-blue:   var(--color-safe);
+            --danger-red:  var(--color-danger);
+            --god-glow:    var(--color-tier-god-glow);
+            --system-teal: var(--color-tier-system);
+            --system-glow: var(--color-tier-system-glow);
         }
         body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            background: radial-gradient(circle at top, #1a1a1a 0%, #0a0a0a 100%);
-            color: var(--text-main);
+            font-family: var(--font-sans);
+            background: radial-gradient(circle at top, var(--neutral-800) 0%, var(--neutral-900) 100%);
+            color: var(--color-text-primary);
             margin: 0; padding: 0;
-            transition: padding-top 0.3s ease;
+            font-feature-settings: "kern" 1;
+            transition: padding-top var(--duration-base) var(--ease-out);
         }
         header {
             position: fixed; top: 0; left: 0; width: 100%;
-            background-color: rgba(10,10,10,0.95);
-            border-bottom: 2px solid var(--manon-pink);
-            z-index: 1000; padding: 12px 15px; box-sizing: border-box;
+            background-color: rgba(13, 12, 10, 0.96);
+            border-bottom: 1px solid var(--color-accent);
+            z-index: 1000; padding: var(--space-3) var(--space-4); box-sizing: border-box;
             backdrop-filter: blur(15px);
-            box-shadow: 0 4px 25px rgba(0,0,0,0.7);
         }
         h1 {
-            font-size: 1.1rem; margin: 0 0 12px 0;
-            color: var(--manon-gold); text-align: center;
-            letter-spacing: 2px; text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(212,175,55,0.4);
+            font-family: var(--font-serif);
+            font-size: var(--text-xl);
+            font-weight: 400;
+            color: var(--color-tier-god);
+            text-align: center;
+            letter-spacing: 0.18em;
+            margin: 0 0 var(--space-3) 0;
         }
-        .main-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+        .main-tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-3); }
         .main-tab-btn {
-            flex: 1; padding: 9px 0; background-color: #1a1a1a; color: var(--text-sub);
-            border: 2px solid #333; border-radius: 8px; font-size: 0.78rem; font-weight: bold;
-            cursor: pointer; transition: all 0.2s;
+            flex: 1; padding: var(--space-2) 0;
+            background-color: var(--color-surface);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-surface-alt);
+            border-radius: var(--space-2);
+            font-size: var(--text-sm); font-weight: bold;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+        .main-tab-btn:hover {
+            color: var(--color-text-primary);
+            border-color: var(--color-text-muted);
         }
         .main-tab-btn.active {
-            background-color: rgba(232,160,191,0.1); color: var(--manon-pink); border-color: var(--manon-pink);
+            background-color: rgba(232, 160, 191, 0.08);
+            color: var(--color-accent);
+            border-color: var(--color-accent);
         }
         .main-tab-btn:active { transform: scale(0.96); }
 
-        .controls { display: flex; flex-direction: column; gap: 10px; max-width: 600px; margin: 0 auto; }
+        .controls { display: flex; flex-direction: column; gap: var(--space-3); max-width: 600px; margin: 0 auto; }
         .controls.collapsed { display: none; }
         .controls.combo-mode .filter-tabs,
         .controls.combo-mode .search-container,
@@ -58,242 +139,394 @@
         .controls.combo-mode .sort-select { display: none; }
 
         .menu-toggle-btn {
-            width: 100%; max-width: 600px; margin: 12px auto 0; display: block;
-            background-color: rgba(232,160,191,0.1); color: var(--manon-pink);
-            border: 1px solid var(--manon-pink); padding: 8px 0; border-radius: 6px;
-            font-size: 0.8rem; font-weight: bold; cursor: pointer; text-align: center;
-            transition: all 0.2s; box-shadow: 0 0 10px rgba(232,160,191,0.15);
+            width: 100%; max-width: 600px; margin: var(--space-3) auto 0; display: block;
+            background-color: rgba(232, 160, 191, 0.07);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            padding: var(--space-2) 0;
+            border-radius: var(--space-2);
+            font-size: var(--text-sm); font-weight: bold; cursor: pointer; text-align: center;
+            transition: background-color var(--duration-fast) var(--ease-out);
         }
-        .menu-toggle-btn:hover { background-color: rgba(232,160,191,0.2); }
+        .menu-toggle-btn:hover { background-color: rgba(232, 160, 191, 0.14); }
         .menu-toggle-btn:active { transform: scale(0.98); }
 
-        .filter-tabs { display: flex; justify-content: space-between; gap: 5px; }
+        .filter-tabs { display: flex; justify-content: space-between; gap: var(--space-1); }
         .filter-btn {
-            flex: 1; background-color: #222; color: var(--text-sub);
-            border: 1px solid #333; padding: 7px 0; border-radius: 6px;
-            font-size: 0.7rem; text-align: center; cursor: pointer; transition: all 0.3s ease;
+            flex: 1; background-color: var(--color-surface); color: var(--color-text-secondary);
+            border: 1px solid var(--color-surface-alt); padding: var(--space-2) 0; border-radius: var(--space-1);
+            font-size: var(--text-xs); text-align: center; cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+        .filter-btn:hover {
+            color: var(--color-text-primary);
+            border-color: var(--color-text-muted);
         }
         .filter-btn.active {
-            background-color: var(--manon-pink); color: #000; font-weight: bold;
-            border-color: var(--manon-pink); box-shadow: 0 0 15px rgba(232,160,191,0.5);
+            background-color: var(--color-accent); color: #000; font-weight: bold;
+            border-color: var(--color-accent);
         }
         .filter-btn:active { transform: scale(0.95); }
 
         .medal-controls {
-            display: flex; align-items: center; gap: 12px;
-            background-color: #111; padding: 6px 12px; border-radius: 8px; border: 1px solid #222;
+            display: flex; align-items: center; gap: var(--space-3);
+            background-color: var(--color-surface); padding: var(--space-1) var(--space-3);
+            border-radius: var(--space-2); border: 1px solid var(--color-surface-alt);
         }
-        .medal-label { font-size: 0.75rem; color: var(--manon-gold); font-weight: bold; }
-        .medal-btns { display: flex; gap: 6px; flex: 1; }
+        .medal-label { font-size: var(--text-xs); color: var(--color-tier-god); font-weight: bold; letter-spacing: 0.08em; }
+        .medal-btns { display: flex; gap: var(--space-1); flex: 1; }
         .medal-btn {
-            flex: 1; background-color: #222; color: var(--text-sub);
-            border: 1px solid #333; padding: 5px 0; border-radius: 4px;
-            font-size: 0.85rem; text-align: center; cursor: pointer; transition: all 0.2s;
+            flex: 1; background-color: var(--color-surface-alt); color: var(--color-text-secondary);
+            border: 1px solid var(--color-surface-alt); padding: var(--space-1) 0; border-radius: var(--space-1);
+            font-family: var(--font-mono); font-size: var(--text-base);
+            text-align: center; cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+        .medal-btn:hover {
+            color: var(--color-text-primary);
+            border-color: var(--color-text-muted);
         }
         .medal-btn.active {
-            background-color: var(--manon-gold); color: #000;
-            font-weight: bold; box-shadow: 0 0 10px var(--god-glow);
+            background-color: var(--color-tier-god); color: #000; font-weight: bold;
         }
         .medal-btn:active { transform: scale(0.95); }
 
         .search-container { position: relative; width: 100%; }
         .search-input {
-            width: 100%; padding: 10px 35px 10px 12px;
-            background-color: #1a1a1a; color: var(--text-main);
-            border: 1px solid #333; border-radius: 6px; font-size: 0.85rem;
-            box-sizing: border-box; outline: none;
+            width: 100%; padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
+            background-color: var(--color-surface); color: var(--color-text-primary);
+            border: 1px solid var(--color-surface-alt); border-radius: var(--space-1);
+            font-size: var(--text-base); box-sizing: border-box; outline: none;
+            transition: border-color var(--duration-fast) var(--ease-out);
+        }
+        .search-input:focus {
+            border-color: var(--color-accent);
         }
         #search-clear {
             position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--text-sub);
-            font-size: 1.2rem; cursor: pointer; display: none; transition: transform 0.1s;
+            background: none; border: none; color: var(--color-text-muted);
+            font-size: 1.2rem; cursor: pointer; display: none;
+            transition: color var(--duration-fast) var(--ease-out);
         }
+        #search-clear:hover { color: var(--color-text-secondary); }
         #search-clear:active { transform: translateY(-50%) scale(0.8); }
 
         .mini-legend {
-            font-size: 0.65rem; color: var(--text-sub);
+            font-size: var(--text-xs); color: var(--color-text-muted);
             display: flex; flex-wrap: wrap; justify-content: center;
-            gap: 4px 12px; line-height: 1.2; text-align: center; margin-bottom: -4px;
+            gap: var(--space-1) var(--space-3); line-height: 1.2; text-align: center; margin-bottom: -4px;
         }
         .mini-legend span { white-space: nowrap; }
-        .mini-legend strong { color: var(--manon-pink); }
-        .mini-legend .sys-hint { color: var(--system-teal); }
+        .mini-legend strong { color: var(--color-accent); }
+        .mini-legend .sys-hint { color: var(--color-tier-system); }
 
         .sort-select {
-            width: 100%; padding: 10px; background-color: #1a1a1a;
-            color: var(--text-main); border: 1px solid #333; border-radius: 6px; font-size: 0.85rem;
+            width: 100%; padding: var(--space-2) var(--space-3);
+            background-color: var(--color-surface); color: var(--color-text-primary);
+            border: 1px solid var(--color-surface-alt); border-radius: var(--space-1);
+            font-size: var(--text-base);
         }
 
         /* ===== 技カード ===== */
         #card-container {
-            display: flex; flex-direction: column; gap: 16px;
-            padding: 15px 15px 30px; max-width: 600px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: var(--space-4);
+            padding: var(--space-4) var(--space-4) var(--space-8); max-width: 600px; margin: 0 auto;
         }
         .skill-card {
-            background-color: var(--card-bg); border-radius: 14px; padding: 18px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            border-left: 5px solid var(--manon-pink); transition: transform 0.2s;
+            background-color: var(--color-surface);
+            border-radius: var(--space-3);
+            padding: var(--space-4);
+            border-left: 3px solid var(--color-accent);
+            transition: transform var(--duration-fast) var(--ease-out);
         }
+        .skill-card:hover { transform: translateX(2px); }
         .skill-card.god-tier {
-            border-left-color: var(--manon-gold);
-            box-shadow: 0 0 20px var(--god-glow);
-            background: linear-gradient(135deg, #161616 0%, #252010 100%);
+            border-left-color: var(--color-tier-god);
+            background: linear-gradient(135deg, var(--neutral-800) 0%, #201c0a 100%);
+            box-shadow: 0 0 16px var(--color-tier-god-glow);
+            transition: transform var(--duration-fast) var(--ease-out),
+                        box-shadow var(--duration-base) var(--ease-out);
+        }
+        .skill-card.god-tier:hover {
+            transform: translateX(2px);
+            box-shadow: 0 0 28px var(--color-tier-god-glow);
         }
         .skill-card.system-tier {
-            border-left-color: var(--system-teal);
-            box-shadow: 0 0 15px var(--system-glow);
-            background: linear-gradient(135deg, #161616 0%, #0a1f22 100%);
+            border-left-color: var(--color-tier-system);
+            background: linear-gradient(135deg, var(--neutral-800) 0%, #071518 100%);
+            box-shadow: 0 0 12px var(--color-tier-system-glow);
+            transition: transform var(--duration-fast) var(--ease-out),
+                        box-shadow var(--duration-base) var(--ease-out);
         }
-        .skill-card.replaceable { opacity: 0.7; border-left-color: #555; }
+        .skill-card.system-tier:hover {
+            transform: translateX(2px);
+            box-shadow: 0 0 22px var(--color-tier-system-glow);
+        }
+        .skill-card.replaceable {
+            opacity: 0.65;
+            border-left-color: var(--color-text-muted);
+            filter: saturate(0.6);
+        }
         .skill-header {
             display: flex; justify-content: space-between; align-items: flex-start;
-            margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 10px;
+            margin-bottom: var(--space-3);
+            border-bottom: 1px solid var(--color-surface-alt);
+            padding-bottom: var(--space-2);
         }
-        .skill-name-wrapper { display: flex; align-items: center; gap: 8px; }
+        .skill-name-wrapper { display: flex; align-items: center; gap: var(--space-2); }
         .skill-id-badge {
-            background-color: #222; color: var(--manon-pink); border: 1px solid var(--manon-pink);
-            font-size: 0.75rem; font-weight: bold; width: 22px; height: 22px; border-radius: 50%;
+            background-color: var(--color-surface-alt);
+            color: var(--color-accent);
+            border: 1px solid var(--color-accent);
+            font-family: var(--font-mono);
+            font-size: var(--text-sm); font-weight: bold;
+            width: 22px; height: 22px; border-radius: 50%;
             display: inline-flex; justify-content: center; align-items: center; flex-shrink: 0;
         }
-        .skill-card.god-tier    .skill-id-badge { background-color: var(--manon-gold); color: #000; border-color: var(--manon-gold); }
-        .skill-card.system-tier .skill-id-badge { background-color: var(--system-teal); color: #000; border-color: var(--system-teal); }
-        .skill-name { font-size: 1.15rem; font-weight: bold; margin: 0; }
-        .skill-command { font-size: 0.75rem; color: var(--text-sub); margin-top: 3px; }
+        .skill-card.god-tier    .skill-id-badge { background-color: var(--color-tier-god);    color: #000; border-color: var(--color-tier-god); }
+        .skill-card.system-tier .skill-id-badge { background-color: var(--color-tier-system); color: #000; border-color: var(--color-tier-system); }
+        .skill-name {
+            font-size: var(--text-md); font-weight: bold; margin: 0;
+            color: var(--color-text-primary);
+        }
+        .skill-command {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--color-text-muted);
+            margin-top: var(--space-1);
+            letter-spacing: 0.04em;
+        }
         .skill-score {
-            background: linear-gradient(135deg, var(--manon-gold), #b8860b);
-            color: #000; font-weight: 900; padding: 6px 14px; border-radius: 20px; font-size: 1rem;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+            flex-shrink: 0;
         }
-        .skill-score.sys-score {
-            background: linear-gradient(135deg, var(--system-teal), #00838f);
+        .skill-score-number {
+            font-family: var(--font-mono);
+            font-size: var(--text-lg); font-weight: bold;
+            color: var(--color-tier-god);
+            line-height: 1;
         }
-        .param-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 12px; }
-        .param-item { background-color: #222; padding: 8px 4px; border-radius: 8px; text-align: center; border: 1px solid #333; }
-        .param-label { font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 2px; }
-        .param-value { font-size: 1.05rem; font-weight: 800; }
-        .value-safe   { color: var(--safe-blue); }
-        .value-danger { color: var(--danger-red); }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; }
-        .tag         { font-size: 0.65rem; padding: 4px 10px; border-radius: 6px; background-color: #333; color: #ccc; }
-        .tag.god     { background-color: var(--manon-gold); color: #000; font-weight: bold; }
-        .tag.sys     { background-color: var(--system-teal); color: #000; font-weight: bold; }
-        .tag.warning { background-color: #4d1f1f; color: #ff9999; }
+        .skill-score-bar {
+            width: 48px; height: 2px;
+            background-color: var(--color-surface-alt);
+            border-radius: 1px; overflow: hidden;
+        }
+        .skill-score-bar-fill {
+            height: 100%;
+            background-color: var(--color-tier-god);
+            border-radius: 1px;
+        }
+        .skill-score.sys-score .skill-score-number { color: var(--color-tier-system); }
+        .skill-score.sys-score .skill-score-bar-fill { background-color: var(--color-tier-system); }
+        .param-grid {
+            display: grid; grid-template-columns: repeat(3,1fr);
+            gap: var(--space-2); margin-bottom: var(--space-3);
+        }
+        .param-item {
+            background-color: var(--color-surface-alt);
+            padding: var(--space-2) var(--space-1);
+            border-radius: var(--space-1);
+            text-align: center;
+            border: 1px solid var(--color-surface-alt);
+        }
+        .param-label {
+            font-size: var(--text-xs); color: var(--color-text-muted);
+            display: block; margin-bottom: 2px;
+            letter-spacing: 0.06em; text-transform: uppercase;
+        }
+        .param-value {
+            font-family: var(--font-mono);
+            font-size: var(--text-md); font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--color-text-primary);
+        }
+        .value-safe   { color: var(--color-safe); }
+        .value-danger { color: var(--color-danger); }
+        .tag-container { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+        .tag {
+            font-size: var(--text-xs); padding: 3px var(--space-2);
+            border-radius: var(--space-1);
+            background-color: var(--color-surface-alt);
+            color: var(--color-text-secondary);
+            letter-spacing: 0.04em;
+        }
+        .tag.god     { background-color: var(--color-tier-god);    color: #000; font-weight: bold; }
+        .tag.sys     { background-color: var(--color-tier-system); color: #000; font-weight: bold; }
+        .tag.warning { background-color: rgba(255, 82, 82, 0.15);  color: var(--red-400); }
         .note-text {
-            font-size: 0.75rem; color: var(--manon-pink); margin-top: 10px;
-            font-style: italic; border-top: 1px dashed #444; padding-top: 8px;
+            font-family: var(--font-serif);
+            font-size: var(--text-base); font-style: italic;
+            color: var(--color-accent);
+            margin-top: var(--space-3);
+            border-top: 1px solid var(--color-surface-alt);
+            padding-top: var(--space-2);
+            line-height: 1.6;
         }
-        .skill-card.system-tier .note-text { color: var(--system-teal); }
+        .skill-card.system-tier .note-text { color: var(--color-tier-system); }
 
         /* ===== コンボカード ===== */
         #combo-container {
-            display: flex; flex-direction: column; gap: 10px;
-            padding: 15px 15px 40px; max-width: 600px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: var(--space-2);
+            padding: var(--space-4) var(--space-4) var(--space-10); max-width: 600px; margin: 0 auto;
         }
         .combo-category-label {
-            font-size: 0.82rem; font-weight: bold; color: var(--text-sub);
-            margin: 10px 0 4px 2px; letter-spacing: 1px;
-            display: flex; align-items: center; gap: 8px;
+            font-size: var(--text-sm); font-weight: bold; color: var(--color-text-muted);
+            margin: var(--space-3) 0 var(--space-1) 2px; letter-spacing: 0.1em;
+            display: flex; align-items: center; gap: var(--space-2);
+            text-transform: uppercase;
         }
-        .combo-category-label::after { content:''; flex:1; height:1px; background:#2a2a2a; }
+        .combo-category-label::after { content:''; flex:1; height:1px; background: var(--color-surface-alt); }
 
         .combo-card {
-            background-color: var(--card-bg); border-radius: 12px; padding: 14px 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-left: 4px solid var(--manon-pink);
+            background-color: var(--color-surface);
+            border-radius: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-left: 3px solid var(--color-accent);
         }
-        .combo-card.cat-basic   { border-left-color: var(--manon-pink); }
-        .combo-card.cat-medal   { border-left-color: var(--manon-gold); background: linear-gradient(135deg,#161616,#1e1a08); }
-        .combo-card.cat-sa2     { border-left-color: var(--safe-blue); background: linear-gradient(135deg,#161616,#081620); }
-        .combo-card.cat-antiair { border-left-color: #69f0ae; background: linear-gradient(135deg,#161616,#081a10); }
+        .combo-card.cat-basic   { border-left-color: var(--color-accent); }
+        .combo-card.cat-medal   { border-left-color: var(--color-tier-god);    background: linear-gradient(135deg, var(--neutral-800), #181408); }
+        .combo-card.cat-sa2     { border-left-color: var(--color-safe);        background: linear-gradient(135deg, var(--neutral-800), #060e16); }
+        .combo-card.cat-antiair { border-left-color: #69f0ae;                  background: linear-gradient(135deg, var(--neutral-800), #061410); }
 
-        .combo-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .combo-name { font-size: 0.92rem; font-weight: bold; }
+        .combo-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2); }
+        .combo-name { font-size: var(--text-base); font-weight: bold; color: var(--color-text-primary); }
         .combo-damage {
-            font-size: 0.85rem; font-weight: 800; color: var(--manon-gold);
-            background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3);
-            padding: 3px 10px; border-radius: 10px; white-space: nowrap;
+            font-family: var(--font-mono);
+            font-variant-numeric: tabular-nums;
+            font-size: var(--text-sm); font-weight: 700; color: var(--color-tier-god);
+            background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.25);
+            padding: 2px var(--space-2); border-radius: var(--space-1); white-space: nowrap;
         }
         .combo-steps {
             display: flex; align-items: center; flex-wrap: wrap;
-            gap: 4px; margin-bottom: 9px;
+            gap: var(--space-1); margin-bottom: var(--space-2);
         }
         .combo-step-badge {
-            width: 28px; height: 28px; border-radius: 50%;
+            width: 26px; height: 26px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            font-size: 0.8rem; font-weight: bold; color: #000; flex-shrink: 0;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs); font-weight: bold; color: #000; flex-shrink: 0;
         }
-        .type-normal { background-color: var(--manon-pink); }
-        .type-god    { background-color: var(--manon-gold); }
-        .type-system { background-color: var(--system-teal); }
+        .type-normal { background-color: var(--color-accent); }
+        .type-god    { background-color: var(--color-tier-god); }
+        .type-system { background-color: var(--color-tier-system); }
         .combo-step-action {
-            font-size: 0.65rem; background: #2a2a2a; color: #888;
-            padding: 4px 8px; border-radius: 4px; white-space: nowrap; border: 1px solid #333;
+            font-size: var(--text-xs); background: var(--color-surface-alt); color: var(--color-text-muted);
+            padding: 3px var(--space-2); border-radius: var(--space-1); white-space: nowrap;
+            border: 1px solid var(--color-surface-alt);
         }
-        .combo-arrow { color: #444; font-size: 1rem; flex-shrink: 0; line-height: 1; }
+        .combo-arrow { color: var(--color-text-muted); font-size: 1rem; flex-shrink: 0; line-height: 1; }
 
         .combo-recipe {
-            font-size: 0.67rem; color: #555;
-            margin-bottom: 9px; line-height: 1.5;
-            border-left: 2px solid #252525; padding-left: 8px;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs); color: var(--color-text-muted);
+            margin-bottom: var(--space-2); line-height: 1.6;
+            border-left: 2px solid var(--color-surface-alt); padding-left: var(--space-2);
         }
-        .combo-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+        .combo-meta { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
         .combo-difficulty { display: flex; gap: 1px; }
-        .star-on  { color: var(--manon-gold); font-size: 0.9rem; }
-        .star-off { color: #2a2a2a; font-size: 0.9rem; }
+        .star-on  { color: var(--color-tier-god); font-size: 0.9rem; }
+        .star-off { color: var(--color-surface-alt); font-size: 0.9rem; }
         .combo-condition {
-            font-size: 0.67rem; color: var(--safe-blue);
-            background: rgba(79,195,247,0.07); border: 1px solid rgba(79,195,247,0.2);
-            padding: 2px 8px; border-radius: 4px;
+            font-size: var(--text-xs); color: var(--color-safe);
+            background: rgba(79,195,247,0.06); border: 1px solid rgba(79,195,247,0.18);
+            padding: 2px var(--space-2); border-radius: var(--space-1);
         }
         .combo-medal-gain {
-            font-size: 0.67rem; color: var(--manon-gold);
-            background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.2);
-            padding: 2px 8px; border-radius: 4px;
+            font-size: var(--text-xs); color: var(--color-tier-god);
+            background: rgba(212,175,55,0.07); border: 1px solid rgba(212,175,55,0.2);
+            padding: 2px var(--space-2); border-radius: var(--space-1);
         }
         .combo-note {
-            font-size: 0.71rem; color: #777; margin-top: 8px;
-            border-top: 1px dashed #252525; padding-top: 7px; font-style: italic;
+            font-family: var(--font-serif);
+            font-size: var(--text-sm); color: var(--color-text-muted);
+            margin-top: var(--space-2);
+            border-top: 1px solid var(--color-surface-alt);
+            padding-top: var(--space-2); font-style: italic;
         }
 
         /* ===== 五十音表 ===== */
         .legend-container {
-            padding: 10px 10px 20px; max-width: 600px; margin: 0 auto;
-            display: flex; flex-direction: column; gap: 8px;
+            padding: var(--space-3) var(--space-3) var(--space-6); max-width: 600px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: var(--space-2);
         }
-        .legend-split-layout { display: flex; gap: 8px; }
+        .legend-split-layout { display: flex; gap: var(--space-2); }
         .legend-split-layout > .legend-section { flex: 1; min-width: 0; }
         .legend-section {
-            background: rgba(255,255,255,0.03); border: 1px solid #333;
-            border-radius: 8px; padding: 8px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--color-surface-alt);
+            border-radius: var(--space-2); padding: var(--space-2);
         }
         .legend-section.system-section {
-            border-color: var(--system-teal); background: rgba(38,198,218,0.04);
+            border-color: var(--color-tier-system);
+            background: rgba(38,198,218,0.03);
         }
         .legend-section-title {
-            color: var(--manon-gold); font-size: 0.8rem;
-            margin: 0 0 6px; border-bottom: 1px solid #444; padding-bottom: 4px;
+            font-family: var(--font-serif);
+            color: var(--color-tier-god); font-size: var(--text-sm);
+            margin: 0 0 var(--space-2); border-bottom: 1px solid var(--color-surface-alt);
+            padding-bottom: var(--space-1); letter-spacing: 0.06em;
         }
-        .legend-section.system-section .legend-section-title { color: var(--system-teal); }
-        .legend-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; }
+        .legend-section.system-section .legend-section-title { color: var(--color-tier-system); }
+        .legend-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--space-1); }
         .legend-grid.two-col { grid-template-columns: repeat(2,1fr); }
         .legend-item {
-            display: flex; align-items: center; gap: 4px;
-            background: #111; padding: 4px; border-radius: 4px; border: 1px solid #222;
-            cursor: pointer; transition: background-color 0.2s, transform 0.1s;
+            display: flex; align-items: center; gap: var(--space-1);
+            background: var(--color-surface); padding: var(--space-1); border-radius: var(--space-1);
+            border: 1px solid var(--color-surface-alt);
+            cursor: pointer;
+            transition: background-color var(--duration-fast) var(--ease-out),
+                        transform var(--duration-fast) var(--ease-out);
         }
-        .legend-item:not(.empty):hover, .legend-item:not(.empty):active { background-color: #333; transform: scale(0.97); }
+        .legend-item:not(.empty):hover { background-color: var(--color-surface-alt); }
+        .legend-item:not(.empty):active { transform: scale(0.97); }
         .legend-item.empty { visibility: hidden; cursor: default; }
         .legend-badge {
-            background-color: var(--manon-pink); color: #000; font-size: 0.6rem; font-weight: bold;
+            background-color: var(--color-accent); color: #000;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs); font-weight: bold;
             width: 18px; height: 18px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center; flex-shrink: 0;
         }
-        .legend-badge.sys { background-color: var(--system-teal); }
-        .legend-name { font-size: 0.65rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .legend-badge.sys { background-color: var(--color-tier-system); }
+        .legend-name {
+            font-size: var(--text-xs); color: var(--color-text-primary);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
         .legend-item.with-cmd { flex-direction: column; align-items: flex-start; gap: 3px; height: auto; }
-        .legend-item.with-cmd .legend-row { display: flex; align-items: center; gap: 4px; width: 100%; }
-        .legend-cmd { font-size: 0.57rem; color: #666; font-family: 'Courier New', monospace; padding-left: 2px; }
+        .legend-item.with-cmd .legend-row { display: flex; align-items: center; gap: var(--space-1); width: 100%; }
+        .legend-cmd {
+            font-family: var(--font-mono);
+            font-size: 0.57rem; color: var(--color-text-muted); padding-left: 2px;
+        }
 
-        @keyframes fadeInUp { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
-        .animate-fade { opacity:0; animation:fadeInUp 0.3s ease-out forwards; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes godGlow {
+            0%, 100% { box-shadow: 0 0 16px var(--color-tier-god-glow); }
+            50%       { box-shadow: 0 0 28px var(--color-tier-god-glow); }
+        }
+        .animate-fade {
+            opacity: 0;
+            animation: fadeInUp var(--duration-base) var(--ease-out) forwards;
+        }
+        .skill-card.god-tier {
+            animation: godGlow 3s var(--ease-out) infinite;
+        }
+        .skill-card.god-tier:hover {
+            animation: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition: none !important;
+                animation: none !important;
+            }
+            .animate-fade { opacity: 1; }
+            .skill-card.god-tier { box-shadow: 0 0 16px var(--color-tier-god-glow); }
+        }
     </style>
 </head>
 <body>
@@ -690,8 +923,17 @@
                            : (move.guard===null||move.guard===undefined) ? '不可'
                            : (move.startup===null ? '—' : (move.guard>0?'+':'')+move.guard+'F');
             const stTxt    = move.startup===null ? '—' : move.startup+'F';
-            const scoreTxt = isSys ? `<span class="skill-score sys-score">SYSTEM</span>`
-                           : `<span class="skill-score">Score: ${Math.floor(move.score)}</span>`;
+            const scorePct = isSys ? 0 : Math.min(100, Math.floor(move.score / 2));
+            const scoreTxt = isSys
+                ? `<div class="skill-score sys-score">
+                       <span class="skill-score-number">SYS</span>
+                   </div>`
+                : `<div class="skill-score">
+                       <span class="skill-score-number">${Math.floor(move.score)}</span>
+                       <div class="skill-score-bar">
+                           <div class="skill-score-bar-fill" style="width:${scorePct}%"></div>
+                       </div>
+                   </div>`;
             const cardCls  = isSys ? 'system-tier' : (isGod ? 'god-tier' : (isWeak ? 'replaceable' : ''));
             const noteTxt  = move.note ? `<div class="note-text">${move.note}</div>` : '';
 
