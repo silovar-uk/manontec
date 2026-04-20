@@ -137,6 +137,7 @@
         .controls.combo-mode .search-container,
         .controls.combo-mode .mini-legend,
         .controls.combo-mode .sort-select { display: none; }
+        .controls.table-mode .sort-select { display: none; }
 
         .menu-toggle-btn {
             width: 100%; max-width: 600px; margin: var(--space-3) auto 0; display: block;
@@ -445,6 +446,113 @@
             padding-top: var(--space-2); font-style: italic;
         }
 
+        /* ===== 発生F表 ===== */
+        #table-container {
+            max-width: 600px; margin: 0 auto;
+            padding: var(--space-4) var(--space-4) var(--space-10);
+        }
+        .table-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-surface-alt);
+            border-radius: var(--space-3);
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.02) inset;
+        }
+        .table-headnote {
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--color-surface-alt);
+            color: var(--color-text-muted);
+            font-size: var(--text-xs);
+            line-height: 1.6;
+            background: rgba(255,255,255,0.02);
+        }
+        .startup-table-wrap { overflow-x: auto; }
+        .startup-table {
+            width: 100%; border-collapse: collapse;
+            font-size: var(--text-sm);
+        }
+        .startup-table th,
+        .startup-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--color-surface-alt);
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .startup-table th {
+            position: sticky; top: 0; z-index: 1;
+            background: var(--neutral-800);
+            color: var(--color-text-secondary);
+            font-size: var(--text-xs);
+            letter-spacing: 0.06em;
+            text-align: left;
+        }
+        .startup-table tbody tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        .startup-table td.col-num,
+        .startup-table th.col-num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .startup-table .id-chip {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 999px;
+            background: var(--color-surface-alt);
+            border: 1px solid var(--color-accent);
+            color: var(--color-accent);
+            font-family: var(--font-mono);
+            font-size: var(--text-sm); font-weight: 700;
+        }
+        .startup-table .id-chip.sys {
+            border-color: var(--color-tier-system);
+            color: var(--color-tier-system);
+        }
+        .startup-table .id-chip.god {
+            border-color: var(--color-tier-god);
+            color: var(--color-tier-god);
+        }
+        .startup-table .move-name-cell {
+            min-width: 180px;
+            white-space: normal;
+            line-height: 1.45;
+        }
+        .startup-table .command-cell {
+            color: var(--color-text-muted);
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+        }
+        .startup-table .type-pill {
+            display: inline-block;
+            padding: 2px 7px; border-radius: 999px;
+            border: 1px solid var(--color-surface-alt);
+            color: var(--color-text-secondary);
+            font-size: var(--text-xs);
+        }
+        .startup-table .type-pill.system {
+            color: var(--color-tier-system);
+            border-color: rgba(38,198,218,0.35);
+            background: rgba(38,198,218,0.08);
+        }
+        .startup-table .type-pill.special {
+            color: var(--color-tier-god);
+            border-color: rgba(212,175,55,0.28);
+            background: rgba(212,175,55,0.08);
+        }
+        .startup-table .type-pill.unique {
+            color: var(--color-accent);
+            border-color: rgba(232,160,191,0.28);
+            background: rgba(232,160,191,0.08);
+        }
+        .startup-table .startup-fast { color: var(--color-safe); font-weight: 700; }
+        .startup-table .guard-safe { color: var(--color-safe); }
+        .startup-table .guard-risk { color: var(--color-danger); }
+        .table-empty {
+            padding: var(--space-8) var(--space-4);
+            text-align: center;
+            color: var(--color-text-muted);
+            font-size: var(--text-base);
+        }
+
         /* ===== 五十音表 ===== */
         .legend-container {
             padding: var(--space-3) var(--space-3) var(--space-6); max-width: 600px; margin: 0 auto;
@@ -536,6 +644,7 @@
             <button class="main-tab-btn active" id="btn-view-main">📊 技データ</button>
             <button class="main-tab-btn" id="btn-view-legend">📖 五十音表</button>
             <button class="main-tab-btn" id="btn-view-combo">🥊 コンボ表</button>
+            <button class="main-tab-btn" id="btn-view-table">📋 発生表</button>
         </div>
         <div class="controls" id="controls-area">
             <div class="filter-tabs">
@@ -700,6 +809,11 @@
     <!-- コンボ表 -->
     <div id="view-combo" style="display:none;">
         <div id="combo-container"></div>
+    </div>
+
+    <!-- 発生F表 -->
+    <div id="view-table" style="display:none;">
+        <div id="table-container"></div>
     </div>
 
     <script>
@@ -903,6 +1017,42 @@
         return Math.max(0, score);
     }
 
+    function getGuardClass(v) {
+        return (v===null||v===undefined||v==="J"||v>=0) ? 'guard-safe' : (v<=-4 ? 'guard-risk' : '');
+    }
+
+    function formatGuardValue(move) {
+        if (move.guard === "J") return '着地3F';
+        if (move.guard === null || move.guard === undefined) return move.type === 'system' && move.startup === null ? '—' : '不可';
+        if (move.startup === null) return '—';
+        return `${move.guard > 0 ? '+' : ''}${move.guard}F`;
+    }
+
+    function getFilteredMoves(sortMode = currentSort) {
+        let filtered = manonMoves.filter(m => {
+            const matchType   = currentFilter==='all' || m.type===currentFilter;
+            const matchSearch = m.name.toLowerCase().includes(currentSearchTerm)
+                             || m.command.toLowerCase().includes(currentSearchTerm)
+                             || (m.id && m.id===currentSearchTerm);
+            return matchType && matchSearch;
+        });
+
+        filtered.sort((a,b) => {
+            if (sortMode==='score_desc')  return b.score - a.score;
+            if (sortMode==='startup_asc') {
+                const aStart = (a.startup ?? 999);
+                const bStart = (b.startup ?? 999);
+                if (aStart !== bStart) return aStart - bStart;
+                return a.id.localeCompare(b.id,'ja');
+            }
+            if (sortMode==='damage_desc') return b.damage - a.damage;
+            if (sortMode==='id_asc')      return a.id.localeCompare(b.id,'ja');
+            return 0;
+        });
+
+        return filtered;
+    }
+
     // ============================================================
     // 技カード描画
     // ============================================================
@@ -911,7 +1061,6 @@
         container.innerHTML = '';
         movesToRender.forEach((move, index) => {
             const isGod = move.isCore, isWeak = move.isReplaceable, isSys = move.type === 'system';
-            const getGuardClass = v => (v===null||v===undefined||v==="J"||v>=0)?'value-safe':(v<=-4?'value-danger':'');
 
             let tagsHtml = move.tags.map(t => `<span class="tag${t==='システム'?' sys':''}">${t}</span>`).join('');
             if (isSys)       tagsHtml = `<span class="tag sys">⚙ システム技</span>` + tagsHtml;
@@ -919,9 +1068,7 @@
             else if (isWeak) tagsHtml = `<span class="tag warning">⚠ 代用あり</span>` + tagsHtml;
 
             const dmgTxt   = (isSys && move.damage===0) ? '—' : move.damage;
-            const grdTxt   = move.guard==="J"  ? '着地3F'
-                           : (move.guard===null||move.guard===undefined) ? '不可'
-                           : (move.startup===null ? '—' : (move.guard>0?'+':'')+move.guard+'F');
+            const grdTxt   = formatGuardValue(move);
             const stTxt    = move.startup===null ? '—' : move.startup+'F';
             const scorePct = isSys ? 0 : Math.min(100, Math.floor(move.score / 2));
             const scoreTxt = isSys
@@ -952,7 +1099,7 @@
                     <div class="param-grid">
                         <div class="param-item"><span class="param-label">発生</span><span class="param-value">${stTxt}</span></div>
                         <div class="param-item"><span class="param-label">ダメージ</span><span class="param-value">${dmgTxt}</span></div>
-                        <div class="param-item"><span class="param-label">ガード</span><span class="param-value ${getGuardClass(move.guard)}">${grdTxt}</span></div>
+                        <div class="param-item"><span class="param-label">ガード</span><span class="param-value ${getGuardClass(move.guard).replace('guard-','value-')}">${grdTxt}</span></div>
                     </div>
                     <div class="tag-container">${tagsHtml}</div>
                     ${noteTxt}
@@ -1018,6 +1165,62 @@
         });
     }
 
+    function renderStartupTable(movesToRender) {
+        const container = document.getElementById('table-container');
+        if (!movesToRender.length) {
+            container.innerHTML = `
+                <div class="table-card animate-fade">
+                    <div class="table-headnote">検索・フィルタ条件に一致する技がありません。</div>
+                    <div class="table-empty">該当データなし</div>
+                </div>`;
+            return;
+        }
+
+        const rows = movesToRender.map(move => {
+            const typeLabelMap = { normal:'通常技', unique:'特殊技', special:'必殺/SA', system:'システム' };
+            const chipCls = move.type === 'system' ? 'sys' : (move.isCore ? 'god' : '');
+            const startupTxt = move.startup === null ? '—' : `${move.startup}F`;
+            const startupCls = move.startup !== null && move.startup <= 5 ? 'startup-fast' : '';
+            const guardTxt = formatGuardValue(move);
+            const guardCls = getGuardClass(move.guard);
+            const damageTxt = (move.type === 'system' && move.damage === 0) ? '—' : move.damage.toLocaleString();
+            return `
+                <tr>
+                    <td><span class="id-chip ${chipCls}">${move.id}</span></td>
+                    <td class="move-name-cell">${move.name}</td>
+                    <td class="command-cell">${move.command}</td>
+                    <td><span class="type-pill ${move.type}">${typeLabelMap[move.type] || move.type}</span></td>
+                    <td class="col-num ${startupCls}">${startupTxt}</td>
+                    <td class="col-num">${damageTxt}</td>
+                    <td class="col-num ${guardCls}">${guardTxt}</td>
+                </tr>`;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="table-card animate-fade">
+                <div class="table-headnote">
+                    発生Fが早い順で表示。検索・技種別フィルタ・メダルLvの反映あり。
+                    システム技など発生値がないものは末尾に配置。
+                </div>
+                <div class="startup-table-wrap">
+                    <table class="startup-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>技名</th>
+                                <th>コマンド</th>
+                                <th>種別</th>
+                                <th class="col-num">発生</th>
+                                <th class="col-num">ダメージ</th>
+                                <th class="col-num">ガード</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            </div>`;
+    }
+
     // ============================================================
     // 技データ更新
     // ============================================================
@@ -1034,21 +1237,14 @@
             else if (m.id==="を") { m.damage = {1:4000,2:4100,3:4200,4:4400,5:4600}[currentMedalLevel]; }
             m.score = calculateScore(m);
         });
-        let filtered = manonMoves.filter(m => {
-            const matchType   = currentFilter==='all' || m.type===currentFilter;
-            const matchSearch = m.name.toLowerCase().includes(currentSearchTerm)
-                             || m.command.toLowerCase().includes(currentSearchTerm)
-                             || (m.id && m.id===currentSearchTerm);
-            return matchType && matchSearch;
-        });
-        filtered.sort((a,b) => {
-            if(currentSort==='score_desc')  return b.score - a.score;
-            if(currentSort==='startup_asc') return (a.startup||99)-(b.startup||99);
-            if(currentSort==='damage_desc') return b.damage - a.damage;
-            if(currentSort==='id_asc')      return a.id.localeCompare(b.id,'ja');
-            return 0;
-        });
-        renderCards(filtered);
+
+        const filteredMain = getFilteredMoves(currentSort);
+        renderCards(filteredMain);
+
+        if (document.getElementById('view-table').style.display !== 'none') {
+            renderStartupTable(getFilteredMoves('startup_asc'));
+        }
+
         document.getElementById('search-clear').style.display = currentSearchTerm ? 'block' : 'none';
     }
 
@@ -1059,9 +1255,11 @@
         document.getElementById('view-main').style.display   = 'none';
         document.getElementById('view-legend').style.display = 'none';
         document.getElementById('view-combo').style.display  = 'none';
+        document.getElementById('view-table').style.display  = 'none';
         document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
         const ctrl = document.getElementById('controls-area');
         ctrl.classList.remove('combo-mode');
+        ctrl.classList.remove('table-mode');
 
         if (tab === 'main') {
             document.getElementById('view-main').style.display = 'block';
@@ -1079,6 +1277,13 @@
             ctrl.classList.remove('collapsed');
             ctrl.classList.add('combo-mode');
             renderCombos();
+        } else if (tab === 'table') {
+            document.getElementById('view-table').style.display = 'block';
+            document.getElementById('btn-view-table').classList.add('active');
+            document.getElementById('menu-toggle').style.display = 'block';
+            ctrl.classList.remove('collapsed');
+            ctrl.classList.add('table-mode');
+            renderStartupTable(getFilteredMoves('startup_asc'));
         }
         setTimeout(adjustPadding, 50);
     }
@@ -1099,6 +1304,7 @@
     document.getElementById('btn-view-main').addEventListener('click',   () => switchTab('main'));
     document.getElementById('btn-view-legend').addEventListener('click', () => switchTab('legend'));
     document.getElementById('btn-view-combo').addEventListener('click',  () => switchTab('combo'));
+    document.getElementById('btn-view-table').addEventListener('click',  () => switchTab('table'));
 
     document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', e => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
