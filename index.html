@@ -137,7 +137,6 @@
         .controls.combo-mode .search-container,
         .controls.combo-mode .mini-legend,
         .controls.combo-mode .sort-select { display: none; }
-        .controls.table-mode .sort-select { display: none; }
 
         .menu-toggle-btn {
             width: 100%; max-width: 600px; margin: var(--space-3) auto 0; display: block;
@@ -226,6 +225,353 @@
             background-color: var(--color-surface); color: var(--color-text-primary);
             border: 1px solid var(--color-surface-alt); border-radius: var(--space-1);
             font-size: var(--text-base);
+        }
+
+
+        .smart-panel, .compare-tray {
+            max-width: 600px;
+            margin: 0 auto var(--space-4);
+            background: linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02));
+            border: 1px solid var(--color-surface-alt);
+            border-radius: var(--space-3);
+            padding: var(--space-4);
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+        }
+        .smart-panel {
+            margin-top: var(--space-4);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.16);
+        }
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-3);
+            align-items: flex-start;
+            margin-bottom: var(--space-3);
+        }
+        .panel-kicker {
+            font-size: var(--text-xs);
+            letter-spacing: 0.14em;
+            color: var(--color-tier-god);
+            margin-bottom: 2px;
+        }
+        .panel-title {
+            margin: 0;
+            font-size: var(--text-lg);
+            font-family: var(--font-serif);
+            color: var(--color-text-primary);
+        }
+        .panel-summary {
+            min-width: 180px;
+            text-align: right;
+            font-size: var(--text-xs);
+            color: var(--color-text-muted);
+            line-height: 1.6;
+        }
+        .scenario-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-bottom: var(--space-3);
+        }
+        .scenario-chip {
+            border: 1px solid var(--color-surface-alt);
+            background: var(--color-surface);
+            color: var(--color-text-secondary);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+        .scenario-chip:hover {
+            border-color: var(--color-accent);
+            color: var(--color-text-primary);
+            transform: translateY(-1px);
+        }
+        .scenario-chip.active {
+            background: rgba(232, 160, 191, 0.12);
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+            box-shadow: 0 0 0 1px rgba(232,160,191,0.1) inset;
+        }
+        .recommendation-note {
+            font-size: var(--text-sm);
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--space-3);
+        }
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: var(--space-2);
+        }
+        .recommendation-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--color-surface-alt);
+            border-radius: var(--space-2);
+            padding: var(--space-3);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            min-width: 0;
+            transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
+        }
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--color-accent);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .recommendation-rank {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--color-tier-god);
+            letter-spacing: 0.12em;
+        }
+        .recommendation-name {
+            font-size: var(--text-base);
+            font-weight: 700;
+            color: var(--color-text-primary);
+            line-height: 1.4;
+        }
+        .recommendation-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-1);
+            font-size: var(--text-xs);
+            color: var(--color-text-muted);
+        }
+        .recommendation-reason {
+            font-size: var(--text-sm);
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+            min-height: 3em;
+        }
+        .recommendation-actions {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+        .recommendation-btn, .card-tool-btn, .compare-action-btn {
+            border: 1px solid var(--color-surface-alt);
+            background: var(--color-surface);
+            color: var(--color-text-secondary);
+            border-radius: var(--space-1);
+            padding: 7px 10px;
+            font-size: var(--text-xs);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+        .recommendation-btn:hover, .card-tool-btn:hover, .compare-action-btn:hover {
+            color: var(--color-text-primary);
+            border-color: var(--color-accent);
+        }
+        .recommendation-btn:active, .card-tool-btn:active, .compare-action-btn:active {
+            transform: scale(0.97);
+        }
+        .compare-tray.hidden { display: none; }
+        .compare-head {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-3);
+            align-items: flex-start;
+            margin-bottom: var(--space-3);
+        }
+        .compare-title {
+            margin: 0;
+            font-size: var(--text-lg);
+            font-family: var(--font-serif);
+            color: var(--color-text-primary);
+        }
+        .compare-subtitle {
+            font-size: var(--text-sm);
+            color: var(--color-text-muted);
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+        .compare-slot {
+            background: rgba(255,255,255,0.025);
+            border: 1px solid var(--color-surface-alt);
+            border-radius: var(--space-2);
+            padding: var(--space-3);
+            min-height: 190px;
+        }
+        .compare-slot.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-muted);
+            text-align: center;
+            line-height: 1.7;
+        }
+        .compare-move-head {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-2);
+            align-items: flex-start;
+            margin-bottom: var(--space-2);
+        }
+        .compare-move-name {
+            font-size: var(--text-base);
+            font-weight: 700;
+            color: var(--color-text-primary);
+            line-height: 1.4;
+        }
+        .compare-command {
+            font-size: var(--text-xs);
+            color: var(--color-text-muted);
+            font-family: var(--font-mono);
+            margin-top: 4px;
+        }
+        .compare-metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: var(--space-2);
+            margin: var(--space-3) 0;
+        }
+        .compare-metric {
+            background: var(--color-surface);
+            border: 1px solid var(--color-surface-alt);
+            border-radius: var(--space-1);
+            padding: 8px;
+        }
+        .compare-metric-label {
+            display: block;
+            font-size: var(--text-xs);
+            color: var(--color-text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .compare-metric-value {
+            font-family: var(--font-mono);
+            font-size: var(--text-md);
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+        .compare-metric-value.better {
+            color: var(--color-tier-god);
+        }
+        .compare-summary {
+            font-size: var(--text-sm);
+            color: var(--color-text-secondary);
+            line-height: 1.8;
+            padding-top: var(--space-2);
+            border-top: 1px solid var(--color-surface-alt);
+        }
+        .compare-summary strong {
+            color: var(--color-tier-god);
+        }
+        .self-badge, .usecase-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: var(--text-xs);
+            padding: 3px var(--space-2);
+            border-radius: 999px;
+            border: 1px solid transparent;
+        }
+        .self-badge.favorite {
+            background: rgba(212,175,55,0.10);
+            color: var(--color-tier-god);
+            border-color: rgba(212,175,55,0.28);
+        }
+        .self-badge.practice {
+            background: rgba(79,195,247,0.08);
+            color: var(--color-safe);
+            border-color: rgba(79,195,247,0.24);
+        }
+        .self-badge.learned {
+            background: rgba(105,240,174,0.08);
+            color: #69f0ae;
+            border-color: rgba(105,240,174,0.2);
+        }
+        .self-badge.weak {
+            background: rgba(255,82,82,0.10);
+            color: var(--color-danger);
+            border-color: rgba(255,82,82,0.24);
+        }
+        .usecase-badge {
+            background: rgba(232,160,191,0.08);
+            color: var(--color-accent);
+            border-color: rgba(232,160,191,0.18);
+        }
+        .card-tool-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--color-surface-alt);
+        }
+        .card-tool-btn.active {
+            background: rgba(232,160,191,0.12);
+            color: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+        .card-tool-btn.active.is-favorite {
+            background: rgba(212,175,55,0.12);
+            color: var(--color-tier-god);
+            border-color: var(--color-tier-god);
+        }
+        .card-tool-btn.active.is-practice {
+            background: rgba(79,195,247,0.1);
+            color: var(--color-safe);
+            border-color: var(--color-safe);
+        }
+        .card-tool-btn.active.is-learned {
+            background: rgba(105,240,174,0.10);
+            color: #69f0ae;
+            border-color: #69f0ae;
+        }
+        .card-tool-btn.active.is-weak {
+            background: rgba(255,82,82,0.10);
+            color: var(--color-danger);
+            border-color: var(--color-danger);
+        }
+        .skill-card.favorite-card {
+            box-shadow: 0 0 0 1px rgba(212,175,55,0.18), 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .skill-card.mark-practice {
+            border-left-color: var(--color-safe);
+        }
+        .skill-card.mark-learned {
+            border-left-color: #69f0ae;
+        }
+        .skill-card.mark-weak {
+            border-left-color: var(--color-danger);
+        }
+        .compare-slot .tag-container {
+            margin-top: var(--space-2);
+        }
+        .flash-focus {
+            animation: focusPulse 900ms var(--ease-out);
+        }
+        @keyframes focusPulse {
+            0% { transform: translateY(0); box-shadow: 0 0 0 rgba(232,160,191,0); }
+            30% { transform: translateY(-3px); box-shadow: 0 0 0 2px rgba(232,160,191,0.26), 0 12px 28px rgba(0,0,0,0.22); }
+            100% { transform: translateY(0); box-shadow: 0 0 0 rgba(232,160,191,0); }
+        }
+        @media (max-width: 720px) {
+            .panel-head, .compare-head {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .panel-summary {
+                text-align: left;
+                min-width: 0;
+            }
+            .recommendation-grid,
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ===== 技カード ===== */
@@ -446,113 +792,6 @@
             padding-top: var(--space-2); font-style: italic;
         }
 
-        /* ===== 発生F表 ===== */
-        #table-container {
-            max-width: 600px; margin: 0 auto;
-            padding: var(--space-4) var(--space-4) var(--space-10);
-        }
-        .table-card {
-            background-color: var(--color-surface);
-            border: 1px solid var(--color-surface-alt);
-            border-radius: var(--space-3);
-            overflow: hidden;
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.02) inset;
-        }
-        .table-headnote {
-            padding: var(--space-3) var(--space-4);
-            border-bottom: 1px solid var(--color-surface-alt);
-            color: var(--color-text-muted);
-            font-size: var(--text-xs);
-            line-height: 1.6;
-            background: rgba(255,255,255,0.02);
-        }
-        .startup-table-wrap { overflow-x: auto; }
-        .startup-table {
-            width: 100%; border-collapse: collapse;
-            font-size: var(--text-sm);
-        }
-        .startup-table th,
-        .startup-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid var(--color-surface-alt);
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-        .startup-table th {
-            position: sticky; top: 0; z-index: 1;
-            background: var(--neutral-800);
-            color: var(--color-text-secondary);
-            font-size: var(--text-xs);
-            letter-spacing: 0.06em;
-            text-align: left;
-        }
-        .startup-table tbody tr:hover {
-            background: rgba(255,255,255,0.03);
-        }
-        .startup-table td.col-num,
-        .startup-table th.col-num {
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-        }
-        .startup-table .id-chip {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 22px; height: 22px; border-radius: 999px;
-            background: var(--color-surface-alt);
-            border: 1px solid var(--color-accent);
-            color: var(--color-accent);
-            font-family: var(--font-mono);
-            font-size: var(--text-sm); font-weight: 700;
-        }
-        .startup-table .id-chip.sys {
-            border-color: var(--color-tier-system);
-            color: var(--color-tier-system);
-        }
-        .startup-table .id-chip.god {
-            border-color: var(--color-tier-god);
-            color: var(--color-tier-god);
-        }
-        .startup-table .move-name-cell {
-            min-width: 180px;
-            white-space: normal;
-            line-height: 1.45;
-        }
-        .startup-table .command-cell {
-            color: var(--color-text-muted);
-            font-family: var(--font-mono);
-            font-size: var(--text-xs);
-        }
-        .startup-table .type-pill {
-            display: inline-block;
-            padding: 2px 7px; border-radius: 999px;
-            border: 1px solid var(--color-surface-alt);
-            color: var(--color-text-secondary);
-            font-size: var(--text-xs);
-        }
-        .startup-table .type-pill.system {
-            color: var(--color-tier-system);
-            border-color: rgba(38,198,218,0.35);
-            background: rgba(38,198,218,0.08);
-        }
-        .startup-table .type-pill.special {
-            color: var(--color-tier-god);
-            border-color: rgba(212,175,55,0.28);
-            background: rgba(212,175,55,0.08);
-        }
-        .startup-table .type-pill.unique {
-            color: var(--color-accent);
-            border-color: rgba(232,160,191,0.28);
-            background: rgba(232,160,191,0.08);
-        }
-        .startup-table .startup-fast { color: var(--color-safe); font-weight: 700; }
-        .startup-table .guard-safe { color: var(--color-safe); }
-        .startup-table .guard-risk { color: var(--color-danger); }
-        .table-empty {
-            padding: var(--space-8) var(--space-4);
-            text-align: center;
-            color: var(--color-text-muted);
-            font-size: var(--text-base);
-        }
-
         /* ===== 五十音表 ===== */
         .legend-container {
             padding: var(--space-3) var(--space-3) var(--space-6); max-width: 600px; margin: 0 auto;
@@ -644,7 +883,6 @@
             <button class="main-tab-btn active" id="btn-view-main">📊 技データ</button>
             <button class="main-tab-btn" id="btn-view-legend">📖 五十音表</button>
             <button class="main-tab-btn" id="btn-view-combo">🥊 コンボ表</button>
-            <button class="main-tab-btn" id="btn-view-table">📋 発生表</button>
         </div>
         <div class="controls" id="controls-area">
             <div class="filter-tabs">
@@ -687,6 +925,26 @@
 
     <!-- 技データ -->
     <div id="view-main">
+        <section class="smart-panel animate-fade">
+            <div class="panel-head">
+                <div>
+                    <div class="panel-kicker">SMART GUIDE</div>
+                    <h2 class="panel-title">今の悩みから、先に答えを見る</h2>
+                </div>
+                <div class="panel-summary" id="self-summary">お気に入り 0 / 練習中 0 / 覚えた 0 / 苦手 0</div>
+            </div>
+            <div class="scenario-chips" id="scenario-chips">
+                <button class="scenario-chip active" data-scenario="pressure">暴れ</button>
+                <button class="scenario-chip" data-scenario="antiair">対空</button>
+                <button class="scenario-chip" data-scenario="starter">起点</button>
+                <button class="scenario-chip" data-scenario="whiff">差し返し</button>
+                <button class="scenario-chip" data-scenario="ender">締め</button>
+                <button class="scenario-chip" data-scenario="reversal">切り返し</button>
+            </div>
+            <div class="recommendation-note" id="scenario-note"></div>
+            <div class="recommendation-grid" id="scenario-recommendations"></div>
+        </section>
+        <section class="compare-tray hidden animate-fade" id="compare-tray"></section>
         <div id="card-container"></div>
         <section style="max-width:600px;margin:30px auto;padding:25px;color:var(--text-sub);font-size:0.85rem;background:rgba(0,0,0,0.4);border-radius:15px;">
             <h3 style="color:var(--manon-gold);">実戦評価ロジック：マノン・ポテンシャル v2</h3>
@@ -809,11 +1067,6 @@
     <!-- コンボ表 -->
     <div id="view-combo" style="display:none;">
         <div id="combo-container"></div>
-    </div>
-
-    <!-- 発生F表 -->
-    <div id="view-table" style="display:none;">
-        <div id="table-container"></div>
     </div>
 
     <script>
@@ -987,6 +1240,19 @@
     // 状態
     // ============================================================
     let currentFilter='all', currentSort='score_desc', currentMedalLevel=3, currentSearchTerm='';
+    let selectedScenario = 'pressure';
+    let compareIds = [];
+    let lastFilteredMoves = [];
+    const STORAGE_KEY = 'manon-practical-analytics-user-state-v1';
+    const scenarioMeta = {
+        pressure:  { label:'暴れ',     description:'4F/5Fと近距離の安定感を優先。まずは割り込みの答えを見る。' },
+        antiair:   { label:'対空',     description:'通常対空、必殺対空、SA対空を横並びで見る。' },
+        starter:   { label:'起点',     description:'触ってから展開を作る技。ガード有利とヒット後の伸びを重視。' },
+        whiff:     { label:'差し返し', description:'リーチと発生の両立を見る。中距離で押し返す候補。' },
+        ender:     { label:'締め',     description:'ダウン・メダル・火力の出口候補。ルートの終点を見つける。' },
+        reversal:  { label:'切り返し', description:'無敵や割り込みからターンを返す手段を見る。' }
+    };
+    let userState = loadUserState();
 
     // ============================================================
     // ヘッダー高さ自動調整
@@ -1017,40 +1283,322 @@
         return Math.max(0, score);
     }
 
-    function getGuardClass(v) {
-        return (v===null||v===undefined||v==="J"||v>=0) ? 'guard-safe' : (v<=-4 ? 'guard-risk' : '');
+
+    function safeNumber(value, fallback = -999) {
+        return typeof value === 'number' ? value : fallback;
     }
 
-    function formatGuardValue(move) {
-        if (move.guard === "J") return '着地3F';
-        if (move.guard === null || move.guard === undefined) return move.type === 'system' && move.startup === null ? '—' : '不可';
+    function getGuardText(move) {
+        if (move.guard === 'J') return '着地3F';
+        if (move.guard === null || move.guard === undefined) return '不可';
         if (move.startup === null) return '—';
         return `${move.guard > 0 ? '+' : ''}${move.guard}F`;
     }
 
-    function getFilteredMoves(sortMode = currentSort) {
-        let filtered = manonMoves.filter(m => {
-            const matchType   = currentFilter==='all' || m.type===currentFilter;
-            const matchSearch = m.name.toLowerCase().includes(currentSearchTerm)
-                             || m.command.toLowerCase().includes(currentSearchTerm)
-                             || (m.id && m.id===currentSearchTerm);
-            return matchType && matchSearch;
-        });
+    function getStartupText(move) {
+        return move.startup === null ? '—' : `${move.startup}F`;
+    }
 
-        filtered.sort((a,b) => {
-            if (sortMode==='score_desc')  return b.score - a.score;
-            if (sortMode==='startup_asc') {
-                const aStart = (a.startup ?? 999);
-                const bStart = (b.startup ?? 999);
-                if (aStart !== bStart) return aStart - bStart;
-                return a.id.localeCompare(b.id,'ja');
+    function isGroundMove(move) {
+        return move.guard !== 'J' && move.type !== 'system';
+    }
+
+    function hasTagOrNote(move, keyword) {
+        return (move.tags || []).includes(keyword)
+            || (move.note || '').includes(keyword)
+            || (move.name || '').includes(keyword)
+            || (move.command || '').includes(keyword);
+    }
+
+    function loadUserState() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function saveUserState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userState));
+    }
+
+    function getUserMoveState(moveId) {
+        return userState[moveId] || { favorite: false, status: '' };
+    }
+
+    function toggleFavorite(moveId) {
+        const prev = getUserMoveState(moveId);
+        userState[moveId] = { ...prev, favorite: !prev.favorite };
+        saveUserState();
+    }
+
+    function toggleStatus(moveId, status) {
+        const prev = getUserMoveState(moveId);
+        userState[moveId] = { ...prev, status: prev.status === status ? '' : status };
+        saveUserState();
+    }
+
+    function getStatusLabel(status) {
+        return {
+            practice: '練習中',
+            learned: '覚えた',
+            weak: '苦手'
+        }[status] || '';
+    }
+
+    function getUseCaseLabels(move) {
+        const labels = [];
+        if (isGroundMove(move) && typeof move.startup === 'number' && move.startup <= 5) labels.push('暴れ向き');
+        if (hasTagOrNote(move, '対空') || move.id === 'か' || move.id === 'わ') labels.push('対空向き');
+        if ((typeof move.guard === 'number' && move.guard >= 0) || (typeof move.hit === 'number' && move.hit >= 5) || ['い','お','ぴ','ね'].includes(move.id)) labels.push('起点向き');
+        if (move.reach >= 2 && typeof move.startup === 'number' && move.startup <= 15 && isGroundMove(move)) labels.push('差し返し向き');
+        if (hasTagOrNote(move, '完全無敵') || move.id === 'わ' || move.id === 'れ' || move.id === 'ろ') labels.push('切り返し向き');
+        if (hasTagOrNote(move, 'メダル用') || hasTagOrNote(move, 'コンボ') || ['わ','む','み','ぬ'].includes(move.id)) labels.push('締め向き');
+        return [...new Set(labels)].slice(0, 3);
+    }
+
+    function scoreForScenario(move, scenarioKey) {
+        if (move.type === 'system') {
+            if (scenarioKey === 'starter' && move.id === 'ば') return 170;
+            if (scenarioKey === 'whiff' && move.id === 'ど') return 120;
+            return -999;
+        }
+        const startup = typeof move.startup === 'number' ? move.startup : 99;
+        const guard = typeof move.guard === 'number' ? move.guard : -99;
+        const hit = typeof move.hit === 'number' ? move.hit : 0;
+        const downBonus = String(move.hit).includes('Down') ? 20 : 0;
+        switch (scenarioKey) {
+            case 'pressure': {
+                if (move.guard === 'J' || startup > 10) return -999;
+                let s = 160 - startup * 9 + Math.max(0, guard) * 10 + move.damage / 70 - Math.max(0, -guard - 3) * 4;
+                if (isGroundMove(move)) s += 18;
+                if (startup <= 4) s += 16;
+                if (move.cancel) s += 10;
+                if (move.id === 'よ') s += 8;
+                return s;
             }
-            if (sortMode==='damage_desc') return b.damage - a.damage;
-            if (sortMode==='id_asc')      return a.id.localeCompare(b.id,'ja');
-            return 0;
-        });
+            case 'antiair': {
+                if (!(hasTagOrNote(move, '対空') || hasTagOrNote(move, '完全無敵') || move.id === 'か' || move.id === 'わ')) return -999;
+                let s = 160 - startup * 5 + move.damage / 55;
+                if (hasTagOrNote(move, '対空')) s += 25;
+                if (hasTagOrNote(move, '完全無敵')) s += 20;
+                if (move.id === 'わ') s += 18;
+                if (move.id === 'か') s += 12;
+                return s;
+            }
+            case 'starter': {
+                if (move.guard === 'J') return -999;
+                let s = move.score + hit * 10 + Math.max(0, guard) * 18 + (move.cancel ? 12 : 0);
+                if (move.isCore) s += 14;
+                if (['ね','ぴ','い','お'].includes(move.id)) s += 16;
+                return s;
+            }
+            case 'whiff': {
+                if (move.guard === 'J' || move.type === 'system') return -999;
+                let s = move.reach * 30 + Math.max(0, 18 - startup) * 3 + move.damage / 80 - Math.max(0, -guard - 4) * 3;
+                if (move.reach < 2) s -= 28;
+                if (hasTagOrNote(move, '牽制') || hasTagOrNote(move, '下段')) s += 12;
+                return s;
+            }
+            case 'ender': {
+                if (move.guard === 'J' || move.type === 'system') return -999;
+                let s = move.damage / 28 + downBonus;
+                if (hasTagOrNote(move, 'メダル用')) s += 28;
+                if (hasTagOrNote(move, 'コンボ')) s += 16;
+                if (['わ','む','み','ぬ','に','り'].includes(move.id)) s += 16;
+                return s;
+            }
+            case 'reversal': {
+                if (!(hasTagOrNote(move, '完全無敵') || hasTagOrNote(move, '対空') || ['わ','れ','ろ'].includes(move.id))) return -999;
+                let s = 160 - startup * 4 + move.damage / 60;
+                if (hasTagOrNote(move, '完全無敵')) s += 35;
+                if (move.id === 'わ') s += 18;
+                if (move.id === 'れ') s += 12;
+                return s;
+            }
+            default:
+                return -999;
+        }
+    }
 
-        return filtered;
+    function getScenarioReason(move, scenarioKey) {
+        if (scenarioKey === 'pressure') return `${getStartupText(move)} / ガード${getGuardText(move)} / 近距離の返し向き`;
+        if (scenarioKey === 'antiair') return `${hasTagOrNote(move, '完全無敵') ? '無敵あり / ' : ''}${getStartupText(move)} / 対空候補`;
+        if (scenarioKey === 'starter') return `ヒット${typeof move.hit === 'number' ? (move.hit > 0 ? '+' : '') + move.hit + 'F' : move.hit} / ${move.cancel ? 'キャンセル可' : '単発向き'}`;
+        if (scenarioKey === 'whiff') return `リーチ${move.reach} / ${getStartupText(move)} / 中距離の差し返し候補`;
+        if (scenarioKey === 'ender') return `${move.damage.toLocaleString()} / ${String(move.hit).includes('Down') ? 'ダウン奪取' : '火力重視'}`;
+        if (scenarioKey === 'reversal') return `${hasTagOrNote(move, '完全無敵') ? '完全無敵 / ' : ''}${getStartupText(move)} / 切り返し向き`;
+        return '';
+    }
+
+    function updateScenarioChipState() {
+        document.querySelectorAll('.scenario-chip').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.scenario === selectedScenario);
+        });
+    }
+
+    function renderSelfSummary() {
+        const counts = { favorite: 0, practice: 0, learned: 0, weak: 0 };
+        Object.values(userState).forEach(state => {
+            if (state.favorite) counts.favorite += 1;
+            if (state.status && counts[state.status] !== undefined) counts[state.status] += 1;
+        });
+        document.getElementById('self-summary').textContent = `お気に入り ${counts.favorite} / 練習中 ${counts.practice} / 覚えた ${counts.learned} / 苦手 ${counts.weak}`;
+    }
+
+    function renderRecommendations(candidates) {
+        updateScenarioChipState();
+        const note = document.getElementById('scenario-note');
+        note.textContent = scenarioMeta[selectedScenario].description;
+        const container = document.getElementById('scenario-recommendations');
+        let pool = candidates.filter(m => scoreForScenario(m, selectedScenario) > -900);
+        if (pool.length < 3) {
+            pool = manonMoves.filter(m => scoreForScenario(m, selectedScenario) > -900);
+        }
+        const top = [...pool]
+            .sort((a, b) => scoreForScenario(b, selectedScenario) - scoreForScenario(a, selectedScenario))
+            .slice(0, 3);
+        container.innerHTML = top.map((move, idx) => `
+            <div class="recommendation-card animate-fade" style="animation-delay:${idx * 0.05}s">
+                <div class="recommendation-rank">TOP ${idx + 1}</div>
+                <div class="recommendation-name">${move.id}｜${move.name}</div>
+                <div class="recommendation-meta">
+                    <span>${getStartupText(move)}</span>
+                    <span>ダメージ ${move.damage === 0 ? '—' : move.damage.toLocaleString()}</span>
+                    <span>ガード ${getGuardText(move)}</span>
+                </div>
+                <div class="recommendation-reason">${getScenarioReason(move, selectedScenario)}</div>
+                <div class="recommendation-actions">
+                    <button class="recommendation-btn" data-action="focus-move" data-id="${move.id}">この技を見る</button>
+                    <button class="recommendation-btn" data-action="compare" data-id="${move.id}">${compareIds.includes(move.id) ? '比較中' : '比較に追加'}</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function getMetricClass(value, other, betterWhenLower = false) {
+        if (typeof value !== 'number' || typeof other !== 'number') return '';
+        if (betterWhenLower) return value < other ? 'better' : '';
+        return value > other ? 'better' : '';
+    }
+
+    function renderCompareTags(move) {
+        const state = getUserMoveState(move.id);
+        const badges = [];
+        if (state.favorite) badges.push('<span class="self-badge favorite">★ お気に入り</span>');
+        if (state.status) badges.push(`<span class="self-badge ${state.status}">${getStatusLabel(state.status)}</span>`);
+        getUseCaseLabels(move).forEach(label => badges.push(`<span class="usecase-badge">${label}</span>`));
+        return badges.join('');
+    }
+
+    function buildCompareSlot(move, otherMove) {
+        if (!move) return `
+            <div class="compare-slot empty">
+                もう1つ選ぶと、発生・安全度・リターンを横で見比べられる。
+            </div>
+        `;
+        const otherStartup = otherMove ? safeNumber(otherMove.startup, null) : null;
+        const otherDamage = otherMove ? safeNumber(otherMove.damage, null) : null;
+        const otherGuard = otherMove ? safeNumber(otherMove.guard, null) : null;
+        const otherScore = otherMove ? safeNumber(otherMove.score, null) : null;
+        const otherReach = otherMove ? safeNumber(otherMove.reach, null) : null;
+        return `
+            <div class="compare-slot">
+                <div class="compare-move-head">
+                    <div>
+                        <div class="compare-move-name">${move.id}｜${move.name}</div>
+                        <div class="compare-command">${move.command}</div>
+                    </div>
+                    <button class="compare-action-btn" data-action="compare" data-id="${move.id}">外す</button>
+                </div>
+                <div class="tag-container">${renderCompareTags(move)}</div>
+                <div class="compare-metric-grid">
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">発生</span>
+                        <span class="compare-metric-value ${getMetricClass(safeNumber(move.startup, null), otherStartup, true)}">${getStartupText(move)}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">ダメージ</span>
+                        <span class="compare-metric-value ${getMetricClass(safeNumber(move.damage, null), otherDamage)}">${move.damage === 0 ? '—' : move.damage.toLocaleString()}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">ガード</span>
+                        <span class="compare-metric-value ${getMetricClass(safeNumber(move.guard, null), otherGuard)}">${getGuardText(move)}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">スコア</span>
+                        <span class="compare-metric-value ${getMetricClass(safeNumber(move.score, null), otherScore)}">${move.type === 'system' ? 'SYS' : Math.floor(move.score)}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">リーチ</span>
+                        <span class="compare-metric-value ${getMetricClass(safeNumber(move.reach, null), otherReach)}">${move.reach}</span>
+                    </div>
+                    <div class="compare-metric">
+                        <span class="compare-metric-label">用途</span>
+                        <span class="compare-metric-value">${getUseCaseLabels(move).slice(0, 1).join(' / ') || '汎用'}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderCompareTray() {
+        const tray = document.getElementById('compare-tray');
+        const moves = compareIds.map(id => manonMoves.find(m => m.id === id)).filter(Boolean);
+        if (moves.length === 0) {
+            tray.classList.add('hidden');
+            tray.innerHTML = '';
+            return;
+        }
+        const [left, right] = moves;
+        let summary = '近距離の答えを横に置いて、押し分けを詰める。';
+        if (left && right) {
+            const faster = safeNumber(left.startup, 999) <= safeNumber(right.startup, 999) ? left : right;
+            const stronger = safeNumber(left.damage, -1) >= safeNumber(right.damage, -1) ? left : right;
+            const safer = safeNumber(left.guard, -999) >= safeNumber(right.guard, -999) ? left : right;
+            summary = `先に触るなら <strong>${faster.name}</strong>。リターン重視なら <strong>${stronger.name}</strong>。安全度で残すなら <strong>${safer.name}</strong>。`;
+        }
+        tray.classList.remove('hidden');
+        tray.innerHTML = `
+            <div class="compare-head">
+                <div>
+                    <h2 class="compare-title">比較トレイ</h2>
+                    <div class="compare-subtitle">2つまで並べて、発生・安全度・リターンを一発で見る。</div>
+                </div>
+                <button class="compare-action-btn" data-action="clear-compare">比較をクリア</button>
+            </div>
+            <div class="compare-grid">
+                ${buildCompareSlot(left, right)}
+                ${buildCompareSlot(right, left)}
+            </div>
+            <div class="compare-summary">${summary}</div>
+        `;
+    }
+
+    function toggleCompare(moveId) {
+        if (compareIds.includes(moveId)) {
+            compareIds = compareIds.filter(id => id !== moveId);
+        } else if (compareIds.length < 2) {
+            compareIds = [...compareIds, moveId];
+        } else {
+            compareIds = [compareIds[1], moveId];
+        }
+    }
+
+    function focusMoveCard(moveId) {
+        const card = document.querySelector(`[data-move-id="${moveId}"]`);
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.classList.remove('flash-focus');
+            void card.offsetWidth;
+            card.classList.add('flash-focus');
+            return;
+        }
+        document.getElementById('search-input').value = moveId;
+        currentSearchTerm = moveId.toLowerCase();
+        updateDisplay();
+        setTimeout(() => focusMoveCard(moveId), 80);
     }
 
     // ============================================================
@@ -1061,15 +1609,22 @@
         container.innerHTML = '';
         movesToRender.forEach((move, index) => {
             const isGod = move.isCore, isWeak = move.isReplaceable, isSys = move.type === 'system';
+            const getGuardClass = v => (v===null||v===undefined||v==="J"||v>=0)?'value-safe':(v<=-4?'value-danger':'');
+            const state = getUserMoveState(move.id);
+            const useCaseBadges = getUseCaseLabels(move).map(label => `<span class="usecase-badge">${label}</span>`).join('');
+            const selfBadges = [
+                state.favorite ? '<span class="self-badge favorite">★ お気に入り</span>' : '',
+                state.status ? `<span class="self-badge ${state.status}">${getStatusLabel(state.status)}</span>` : ''
+            ].join('');
 
             let tagsHtml = move.tags.map(t => `<span class="tag${t==='システム'?' sys':''}">${t}</span>`).join('');
             if (isSys)       tagsHtml = `<span class="tag sys">⚙ システム技</span>` + tagsHtml;
             else if (isGod)  tagsHtml = `<span class="tag god">★ 神技</span>` + tagsHtml;
             else if (isWeak) tagsHtml = `<span class="tag warning">⚠ 代用あり</span>` + tagsHtml;
 
-            const dmgTxt   = (isSys && move.damage===0) ? '—' : move.damage;
-            const grdTxt   = formatGuardValue(move);
-            const stTxt    = move.startup===null ? '—' : move.startup+'F';
+            const dmgTxt   = (isSys && move.damage===0) ? '—' : move.damage.toLocaleString();
+            const grdTxt   = getGuardText(move);
+            const stTxt    = getStartupText(move);
             const scorePct = isSys ? 0 : Math.min(100, Math.floor(move.score / 2));
             const scoreTxt = isSys
                 ? `<div class="skill-score sys-score">
@@ -1081,11 +1636,15 @@
                            <div class="skill-score-bar-fill" style="width:${scorePct}%"></div>
                        </div>
                    </div>`;
-            const cardCls  = isSys ? 'system-tier' : (isGod ? 'god-tier' : (isWeak ? 'replaceable' : ''));
+            const cardCls  = [
+                isSys ? 'system-tier' : (isGod ? 'god-tier' : (isWeak ? 'replaceable' : '')),
+                state.favorite ? 'favorite-card' : '',
+                state.status ? `mark-${state.status}` : ''
+            ].join(' ').trim();
             const noteTxt  = move.note ? `<div class="note-text">${move.note}</div>` : '';
 
             container.innerHTML += `
-                <div class="skill-card animate-fade ${cardCls}" style="animation-delay:${index*0.04}s">
+                <div class="skill-card animate-fade ${cardCls}" style="animation-delay:${index*0.04}s" data-move-id="${move.id}">
                     <div class="skill-header">
                         <div>
                             <div class="skill-name-wrapper">
@@ -1099,12 +1658,20 @@
                     <div class="param-grid">
                         <div class="param-item"><span class="param-label">発生</span><span class="param-value">${stTxt}</span></div>
                         <div class="param-item"><span class="param-label">ダメージ</span><span class="param-value">${dmgTxt}</span></div>
-                        <div class="param-item"><span class="param-label">ガード</span><span class="param-value ${getGuardClass(move.guard).replace('guard-','value-')}">${grdTxt}</span></div>
+                        <div class="param-item"><span class="param-label">ガード</span><span class="param-value ${getGuardClass(move.guard)}">${grdTxt}</span></div>
                     </div>
-                    <div class="tag-container">${tagsHtml}</div>
+                    <div class="tag-container">${selfBadges}${useCaseBadges}${tagsHtml}</div>
+                    <div class="card-tool-row">
+                        <button class="card-tool-btn ${compareIds.includes(move.id) ? 'active' : ''}" data-action="compare" data-id="${move.id}">${compareIds.includes(move.id) ? '比較中' : '比較に追加'}</button>
+                        <button class="card-tool-btn ${state.favorite ? 'active is-favorite' : ''}" data-action="favorite" data-id="${move.id}">★</button>
+                        <button class="card-tool-btn ${state.status === 'practice' ? 'active is-practice' : ''}" data-action="status" data-id="${move.id}" data-status="practice">練習中</button>
+                        <button class="card-tool-btn ${state.status === 'learned' ? 'active is-learned' : ''}" data-action="status" data-id="${move.id}" data-status="learned">覚えた</button>
+                        <button class="card-tool-btn ${state.status === 'weak' ? 'active is-weak' : ''}" data-action="status" data-id="${move.id}" data-status="weak">苦手</button>
+                    </div>
                     ${noteTxt}
                 </div>`;
         });
+        renderSelfSummary();
     }
 
     // ============================================================
@@ -1165,69 +1732,12 @@
         });
     }
 
-    function renderStartupTable(movesToRender) {
-        const container = document.getElementById('table-container');
-        if (!movesToRender.length) {
-            container.innerHTML = `
-                <div class="table-card animate-fade">
-                    <div class="table-headnote">検索・フィルタ条件に一致する技がありません。</div>
-                    <div class="table-empty">該当データなし</div>
-                </div>`;
-            return;
-        }
-
-        const rows = movesToRender.map(move => {
-            const typeLabelMap = { normal:'通常技', unique:'特殊技', special:'必殺/SA', system:'システム' };
-            const chipCls = move.type === 'system' ? 'sys' : (move.isCore ? 'god' : '');
-            const startupTxt = move.startup === null ? '—' : `${move.startup}F`;
-            const startupCls = move.startup !== null && move.startup <= 5 ? 'startup-fast' : '';
-            const guardTxt = formatGuardValue(move);
-            const guardCls = getGuardClass(move.guard);
-            const damageTxt = (move.type === 'system' && move.damage === 0) ? '—' : move.damage.toLocaleString();
-            return `
-                <tr>
-                    <td><span class="id-chip ${chipCls}">${move.id}</span></td>
-                    <td class="move-name-cell">${move.name}</td>
-                    <td class="command-cell">${move.command}</td>
-                    <td><span class="type-pill ${move.type}">${typeLabelMap[move.type] || move.type}</span></td>
-                    <td class="col-num ${startupCls}">${startupTxt}</td>
-                    <td class="col-num">${damageTxt}</td>
-                    <td class="col-num ${guardCls}">${guardTxt}</td>
-                </tr>`;
-        }).join('');
-
-        container.innerHTML = `
-            <div class="table-card animate-fade">
-                <div class="table-headnote">
-                    発生Fが早い順で表示。検索・技種別フィルタ・メダルLvの反映あり。
-                    システム技など発生値がないものは末尾に配置。
-                </div>
-                <div class="startup-table-wrap">
-                    <table class="startup-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>技名</th>
-                                <th>コマンド</th>
-                                <th>種別</th>
-                                <th class="col-num">発生</th>
-                                <th class="col-num">ダメージ</th>
-                                <th class="col-num">ガード</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rows}</tbody>
-                    </table>
-                </div>
-            </div>`;
-    }
-
     // ============================================================
     // 技データ更新
     // ============================================================
     function updateDisplay() {
         manonMoves.forEach(m => {
             if (m.name.includes("マネージュ・ドレ")) {
-                // 弱/中/強/ODすべて同じダメージスケール（公式確認済み）
                 const maneDmg = {1:2000,2:2300,3:2700,4:3000,5:3700}[currentMedalLevel];
                 m.damage = maneDmg;
             } else if (m.id==="ま") { m.damage = {1:1350,2:1500,3:1650,4:1800,5:1950}[currentMedalLevel]; }
@@ -1237,14 +1747,24 @@
             else if (m.id==="を") { m.damage = {1:4000,2:4100,3:4200,4:4400,5:4600}[currentMedalLevel]; }
             m.score = calculateScore(m);
         });
-
-        const filteredMain = getFilteredMoves(currentSort);
-        renderCards(filteredMain);
-
-        if (document.getElementById('view-table').style.display !== 'none') {
-            renderStartupTable(getFilteredMoves('startup_asc'));
-        }
-
+        let filtered = manonMoves.filter(m => {
+            const matchType   = currentFilter==='all' || m.type===currentFilter;
+            const matchSearch = m.name.toLowerCase().includes(currentSearchTerm)
+                             || m.command.toLowerCase().includes(currentSearchTerm)
+                             || (m.id && m.id===currentSearchTerm);
+            return matchType && matchSearch;
+        });
+        filtered.sort((a,b) => {
+            if(currentSort==='score_desc')  return b.score - a.score;
+            if(currentSort==='startup_asc') return (a.startup||99)-(b.startup||99);
+            if(currentSort==='damage_desc') return b.damage - a.damage;
+            if(currentSort==='id_asc')      return a.id.localeCompare(b.id,'ja');
+            return 0;
+        });
+        lastFilteredMoves = filtered;
+        renderCards(filtered);
+        renderRecommendations(filtered);
+        renderCompareTray();
         document.getElementById('search-clear').style.display = currentSearchTerm ? 'block' : 'none';
     }
 
@@ -1255,11 +1775,9 @@
         document.getElementById('view-main').style.display   = 'none';
         document.getElementById('view-legend').style.display = 'none';
         document.getElementById('view-combo').style.display  = 'none';
-        document.getElementById('view-table').style.display  = 'none';
         document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
         const ctrl = document.getElementById('controls-area');
         ctrl.classList.remove('combo-mode');
-        ctrl.classList.remove('table-mode');
 
         if (tab === 'main') {
             document.getElementById('view-main').style.display = 'block';
@@ -1277,13 +1795,6 @@
             ctrl.classList.remove('collapsed');
             ctrl.classList.add('combo-mode');
             renderCombos();
-        } else if (tab === 'table') {
-            document.getElementById('view-table').style.display = 'block';
-            document.getElementById('btn-view-table').classList.add('active');
-            document.getElementById('menu-toggle').style.display = 'block';
-            ctrl.classList.remove('collapsed');
-            ctrl.classList.add('table-mode');
-            renderStartupTable(getFilteredMoves('startup_asc'));
         }
         setTimeout(adjustPadding, 50);
     }
@@ -1304,7 +1815,6 @@
     document.getElementById('btn-view-main').addEventListener('click',   () => switchTab('main'));
     document.getElementById('btn-view-legend').addEventListener('click', () => switchTab('legend'));
     document.getElementById('btn-view-combo').addEventListener('click',  () => switchTab('combo'));
-    document.getElementById('btn-view-table').addEventListener('click',  () => switchTab('table'));
 
     document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', e => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1341,6 +1851,56 @@
             updateDisplay();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+    });
+
+    document.getElementById('scenario-chips').addEventListener('click', e => {
+        const btn = e.target.closest('[data-scenario]');
+        if (!btn) return;
+        selectedScenario = btn.dataset.scenario;
+        renderRecommendations(lastFilteredMoves.length ? lastFilteredMoves : manonMoves);
+    });
+
+    document.getElementById('scenario-recommendations').addEventListener('click', e => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        if (action === 'focus-move') {
+            focusMoveCard(id);
+        } else if (action === 'compare') {
+            toggleCompare(id);
+            updateDisplay();
+        }
+    });
+
+    document.getElementById('card-container').addEventListener('click', e => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        if (action === 'compare') {
+            toggleCompare(id);
+        } else if (action === 'favorite') {
+            toggleFavorite(id);
+        } else if (action === 'status') {
+            toggleStatus(id, btn.dataset.status);
+        }
+        updateDisplay();
+    });
+
+    document.getElementById('compare-tray').addEventListener('click', e => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        if (action === 'clear-compare') {
+            compareIds = [];
+            updateDisplay();
+            return;
+        }
+        if (action === 'compare') {
+            toggleCompare(btn.dataset.id);
+            updateDisplay();
+        }
     });
 
     // 初期化
